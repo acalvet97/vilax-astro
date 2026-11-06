@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/*
+ * Horizontal page padding: 16px on mobile (Figma mobile frames) growing
+ * fluidly to 160px at 1920px (Figma desktop frames).
+ */
+@utility px-page {
+  padding-inline: clamp(var(--spacing-sm), calc(10vw - 2rem), var(--spacing-7xl));
+}
+
+@layer base {
+  html {
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply t-body-sm;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+  }
+}

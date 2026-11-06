@@ -1,0 +1,165 @@
+---
+/**
+ * Site footer (Figma Components → Footer: 1428:1929 desktop, 1428:2348 mobile).
+ *
+ * Menu columns:
+ *   - one column per service group of the WordPress `primary` menu
+ *     (Servicios → categories), so services are edited in one place;
+ *   - last column: the WordPress `footer` menu ("About").
+ * Bottom bar: the WordPress `legal` menu.
+ * Contact details, social links and "Ask AI" links: src/config/site.ts.
+ */
+import { Icon } from 'astro-icon/components';
+import { getAiLinks, site, socialLinks, type AiAssistant, type SocialNetwork } from '../../config/site';
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import { getMenu, getServiceGroups, type MenuItem } from '../../lib/navigation';
+import MenuLink from '../navigation/MenuLink.astro';
+import Logo from './Logo.astro';
+
+import ChatGpt from '../../icons/chatgpt.svg';
+import Behance from '../../icons/social/behance.svg';
+import Facebook from '../../icons/social/facebook.svg';
+import Instagram from '../../icons/social/instagram.svg';
+import Linkedin from '../../icons/social/linkedin.svg';
+import Tiktok from '../../icons/social/tiktok.svg';
+import Youtube from '../../icons/social/youtube.svg';
+
+type Props = { locale: Locale };
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const currentPath = Astro.url.pathname;
+
+const [primary, footer, legal] = await Promise.all([
+  getMenu('primary', locale),
+  getMenu('footer', locale),
+  getMenu('legal', locale),
+]);
+
+type Column = { heading: MenuItem | string; items: MenuItem[] };
+const columns: Column[] = [
+  ...getServiceGroups(primary).map((group) => ({ heading: { ...group, children: [] }, items: group.children })),
+  { heading: t('footer.about'), items: footer },
+];
+
+const socialIcons: Record<SocialNetwork, typeof Linkedin> = {
+  linkedin: Linkedin,
+  instagram: Instagram,
+  facebook: Facebook,
+  tiktok: Tiktok,
+  behance: Behance,
+  youtube: Youtube,
+};
+const aiIcons: Record<Exclude<AiAssistant, 'chatgpt'>, string> = {
+  gemini: 'ri:gemini-fill',
+  claude: 'ri:claude-fill',
+  perplexity: 'ri:perplexity-fill',
+};
+const aiLinks = getAiLinks(locale);
+const year = new Date().getFullYear();
+
+const linkClass = 'hover:text-text-inverse-muted';
+const headingClass = 't-caption lg:t-label uppercase text-text-subtle';
+---
+
+<footer class="bg-bg-inverse text-text-inverse">
+  <div
+    class="px-page flex flex-col gap-3xl py-3xl lg:grid lg:grid-cols-4 lg:gap-md lg:py-6xl"
+  >
+    <!-- Left column: brand, contact, social, Ask AI -->
+    <div class="flex flex-col gap-3xl lg:justify-between">
+      <div class="flex flex-col items-start gap-xl">
+        <Logo color="white" size="footer" />
+
+        <address class="t-body-sm flex flex-col gap-sm not-italic">
+          <p>{site.address[0]}<br />{site.address[1]}</p>
+          <a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a>
+          <a href={site.phone.href} class={linkClass}>{site.phone.display}</a>
+        </address>
+
+        <ul class="flex flex-wrap items-center gap-xs" aria-label={t('footer.social')}>
+          {
+            socialLinks.map(({ network, label, href }) => {
+              const SocialIcon = socialIcons[network];
+              return (
+                <li>
+                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} class="block hover:opacity-80">
+                    <SocialIcon aria-hidden="true" />
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-sm">
+        <p class="t-body-sm">{t('footer.askAi')}</p>
+        <ul class="flex items-center gap-xs">
+          {
+            aiLinks.map(({ assistant, label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${t('footer.askAiWith')} ${label}`}
+                  class="flex size-[2.75rem] items-center justify-center bg-bg-inverse-alt hover:bg-border-inverse"
+                >
+                  {assistant === 'chatgpt' ? (
+                    <span class="flex size-lg items-center justify-center">
+                      <ChatGpt aria-hidden="true" />
+                    </span>
+                  ) : (
+                    <Icon name={aiIcons[assistant]} class="size-lg" aria-hidden="true" />
+                  )}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Menu columns -->
+    <nav aria-label={t('nav.menu')} class="grid grid-cols-2 gap-x-md gap-y-xl lg:col-span-3 lg:grid-cols-3 lg:gap-y-3xl">
+      {
+        columns.map((column) => (
+          <div class="flex flex-col gap-sm">
+            {typeof column.heading === 'string' ? (
+              <p class={headingClass}>{column.heading}</p>
+            ) : (
+              <MenuLink item={column.heading} currentPath={currentPath} class={`${headingClass} hover:text-text-inverse`} />
+            )}
+            <ul class="t-body-sm flex flex-col gap-2xs lg:gap-xs">
+              {column.items.map((item) => (
+                <li>
+                  <MenuLink item={item} currentPath={currentPath} class={linkClass} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </nav>
+  </div>
+
+  <!-- Bottom bar -->
+  <div
+    class="px-page flex flex-col gap-xl border-t border-border-inverse py-lg lg:flex-row-reverse lg:items-center lg:justify-between"
+  >
+    <nav aria-label={t('footer.legal')}>
+      <ul class="t-caption lg:t-body-sm flex flex-wrap gap-sm lg:gap-xl">
+        {
+          legal.map((item) => (
+            <li>
+              <MenuLink item={item} currentPath={currentPath} class={linkClass} />
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <p class="t-caption lg:t-body-sm text-text-subtle">{year} © {site.name}. {t('footer.rights')}</p>
+  </div>
+</footer>

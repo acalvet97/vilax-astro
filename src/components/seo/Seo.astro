@@ -1,0 +1,60 @@
+---
+/**
+ * <head> SEO tags: title, description, canonical, hreflang alternates,
+ * robots, Open Graph, Twitter and JSON-LD.
+ *
+ * Canonical and og:url are always derived from the Astro URL (never from
+ * WordPress, whose URLs point at the WP host).
+ */
+import { site } from '../../config/site';
+import { defaultLocale, localeMeta, type Locale } from '../../i18n/config';
+import type { Alternate } from '../../i18n/routes';
+
+export type SeoProps = {
+  title: string;
+  description?: string;
+  locale: Locale;
+  /** Translations of this page, including itself or not (self is added). */
+  alternates?: Alternate[];
+  noindex?: boolean;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'profile';
+  /** Raw JSON-LD string (e.g. from Yoast). */
+  jsonLd?: string;
+};
+
+type Props = SeoProps;
+
+const { title, description, locale, alternates = [], noindex = false, ogImage, ogType = 'website', jsonLd } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const absolute = (path: string) => new URL(path, site.url).href;
+
+// Self + translations, one per locale.
+const links = new Map<Locale, string>([[locale, canonical]]);
+for (const a of alternates) if (!links.has(a.locale)) links.set(a.locale, absolute(a.href));
+const xDefault = links.get(defaultLocale);
+const hasTranslations = links.size > 1;
+---
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+
+{
+  hasTranslations &&
+    [...links].map(([l, href]) => <link rel="alternate" hreflang={localeMeta[l].hreflang} href={href} />)
+}
+{hasTranslations && xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+
+<meta property="og:locale" content={localeMeta[locale].ogLocale} />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={site.name} />
+{ogImage && <meta property="og:image" content={absolute(ogImage)} />}
+<meta name="twitter:card" content="summary_large_image" />
+
+{jsonLd && <script type="application/ld+json" set:html={jsonLd} />}

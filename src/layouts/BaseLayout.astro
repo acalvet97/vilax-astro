@@ -1,0 +1,39 @@
+---
+/**
+ * Base page layout: <head> (fonts, SEO), Header, <main>, Footer.
+ * Every page passes its locale and, when it exists, its translations
+ * (`alternates`) for hreflang and the language switcher.
+ */
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import Seo, { type SeoProps } from '../components/seo/Seo.astro';
+import { localeMeta } from '../i18n/config';
+
+type Props = SeoProps & {
+  headerSurface?: 'light' | 'dark';
+};
+
+const { headerSurface = 'light', ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang={localeMeta[seo.locale].hreflang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-geist" preload />
+    <Seo {...seo} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <Header locale={seo.locale} alternates={seo.alternates} surface={headerSurface} />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer locale={seo.locale} />
+  </body>
+</html>

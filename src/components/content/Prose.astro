@@ -1,0 +1,272 @@
+---
+/**
+ * Prose — renders rich-text HTML coming from WordPress (Gutenberg) or any other
+ * trusted source, styled with the VILAX design tokens.
+ *
+ * Usage:
+ *   <Prose html={post.content} />                 // blog post body
+ *   <Prose html={caso.content} class="mt-2xl" />  // case study body
+ *   <Prose><p>Slot content also works.</p></Prose>
+ *
+ * The HTML is injected with set:html, so descendant selectors use :global()
+ * but stay scoped under this component's .prose wrapper.
+ *
+ * Security: only pass HTML from trusted sources (our own WordPress).
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'> & {
+  /** Raw HTML to render. If omitted, the default slot is rendered instead. */
+  html?: string | null;
+  /** Wrapper element. */
+  as?: 'div' | 'article' | 'section';
+};
+
+const { html, as: Tag = 'div', class: className, ...attrs } = Astro.props;
+---
+
+{
+  html ? (
+    <Tag class:list={['prose', className]} {...attrs} set:html={html} />
+  ) : (
+    <Tag class:list={['prose', className]} {...attrs}>
+      <slot />
+    </Tag>
+  )
+}
+
+<style>
+  .prose {
+    --prose-flow: var(--spacing-lg);
+    color: var(--color-text-muted);
+    font-size: var(--text-xl);
+    line-height: var(--leading-normal);
+    overflow-wrap: break-word;
+  }
+
+  /* ---------- Vertical rhythm ---------- */
+  .prose > :global(* + *) {
+    margin-top: var(--prose-flow);
+  }
+  .prose > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  /* ---------- Headings ---------- */
+  .prose :global(:is(h1, h2, h3, h4, h5, h6)) {
+    color: var(--color-text);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-snug);
+    text-wrap: balance;
+  }
+  .prose :global(h1),
+  .prose :global(h2) {
+    font-size: var(--text-4xl); /* t-heading-lg */
+  }
+  .prose :global(h3) {
+    font-size: var(--text-3xl); /* t-heading-md */
+  }
+  .prose :global(:is(h4, h5, h6)) {
+    font-size: var(--text-2xl); /* t-heading-sm */
+  }
+  .prose > :global(:is(h1, h2)) {
+    margin-top: var(--spacing-3xl);
+  }
+  .prose > :global(:is(h3, h4, h5, h6)) {
+    margin-top: var(--spacing-2xl);
+  }
+  .prose > :global(:is(h1, h2, h3, h4, h5, h6) + *) {
+    margin-top: var(--spacing-sm);
+  }
+
+  /* ---------- Inline ---------- */
+  .prose :global(strong),
+  .prose :global(b) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .prose :global(a) {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-width-default);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms;
+  }
+  .prose :global(a:hover) {
+    text-decoration-color: var(--color-accent);
+  }
+  .prose :global(mark) {
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+  }
+  .prose :global(:not(pre) > code) {
+    font-size: 0.9em;
+    background-color: var(--color-bg-alt);
+    color: var(--color-text);
+    padding: 0.1em 0.35em;
+  }
+
+  /* ---------- Lists ---------- */
+  .prose :global(:is(ul, ol)) {
+    padding-left: var(--spacing-lg);
+  }
+  .prose :global(ul) {
+    list-style: disc;
+  }
+  .prose :global(ol) {
+    list-style: decimal;
+  }
+  .prose :global(li + li),
+  .prose :global(li > :is(ul, ol)) {
+    margin-top: var(--spacing-2xs);
+  }
+  .prose :global(li::marker) {
+    color: var(--color-text-subtle);
+  }
+
+  /* ---------- Quotes (core/quote, core/pullquote) ---------- */
+  .prose :global(blockquote) {
+    border-left: var(--border-width-thick) solid var(--color-accent);
+    padding-left: var(--spacing-lg);
+    color: var(--color-text);
+    font-size: var(--text-2xl); /* t-lead */
+    line-height: var(--leading-normal);
+  }
+  .prose :global(blockquote > * + *) {
+    margin-top: var(--spacing-sm);
+  }
+  .prose :global(blockquote cite) {
+    display: block;
+    font-size: var(--text-sm);
+    font-style: normal;
+    color: var(--color-text-subtle);
+  }
+  .prose :global(.wp-block-pullquote) {
+    border-block: var(--border-width-default) solid var(--color-border);
+    padding-block: var(--spacing-xl);
+  }
+  .prose :global(.wp-block-pullquote blockquote) {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  /* ---------- Media (core/image, core/gallery, core/video) ---------- */
+  .prose :global(:is(img, video, picture, svg)) {
+    max-width: 100%;
+    height: auto;
+  }
+  .prose :global(figure) {
+    margin-inline: 0;
+  }
+  .prose > :global(:is(figure, .wp-block-image, .wp-block-gallery, .wp-block-embed, .wp-block-video, .wp-block-table)) {
+    margin-block: var(--spacing-2xl);
+  }
+  .prose :global(figcaption),
+  .prose :global(.wp-element-caption) {
+    margin-top: var(--spacing-2xs);
+    font-size: var(--text-sm); /* t-caption */
+    line-height: var(--leading-snug);
+    color: var(--color-text-subtle);
+  }
+  .prose :global(.aligncenter) {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .prose :global(.alignleft) {
+    float: left;
+    margin: 0 var(--spacing-lg) var(--spacing-sm) 0;
+  }
+  .prose :global(.alignright) {
+    float: right;
+    margin: 0 0 var(--spacing-sm) var(--spacing-lg);
+  }
+  .prose :global(.wp-block-gallery) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--spacing-sm);
+  }
+  .prose :global(.wp-block-gallery figure) {
+    margin: 0;
+  }
+  .prose :global(.wp-block-gallery img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---------- Embeds (core/embed: YouTube, Vimeo…) ---------- */
+  .prose :global(.wp-block-embed__wrapper) {
+    position: relative;
+  }
+  .prose :global(:is(.wp-embed-aspect-16-9, .wp-embed-aspect-4-3, .wp-embed-aspect-1-1, .wp-embed-aspect-9-16) .wp-block-embed__wrapper iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .prose :global(.wp-embed-aspect-16-9 .wp-block-embed__wrapper) {
+    aspect-ratio: 16 / 9;
+  }
+  .prose :global(.wp-embed-aspect-4-3 .wp-block-embed__wrapper) {
+    aspect-ratio: 4 / 3;
+  }
+  .prose :global(.wp-embed-aspect-1-1 .wp-block-embed__wrapper) {
+    aspect-ratio: 1 / 1;
+  }
+  .prose :global(.wp-embed-aspect-9-16 .wp-block-embed__wrapper) {
+    aspect-ratio: 9 / 16;
+    max-width: 24rem;
+  }
+  .prose :global(iframe) {
+    max-width: 100%;
+    border: 0;
+  }
+
+  /* ---------- Tables (core/table) ---------- */
+  .prose :global(.wp-block-table) {
+    overflow-x: auto;
+  }
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-md);
+  }
+  .prose :global(:is(th, td)) {
+    border-bottom: var(--border-width-default) solid var(--color-border);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose :global(th) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .prose :global(thead th) {
+    border-bottom-color: var(--color-border-strong);
+  }
+
+  /* ---------- Code (core/code, core/preformatted) ---------- */
+  .prose :global(pre) {
+    overflow-x: auto;
+    background-color: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+    padding: var(--spacing-lg);
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
+  }
+
+  /* ---------- Separator (core/separator) ---------- */
+  .prose :global(hr) {
+    border: 0;
+    border-top: var(--border-width-default) solid var(--color-border);
+    margin-block: var(--spacing-2xl);
+  }
+
+  /* ---------- Clear floats ---------- */
+  .prose::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+</style>

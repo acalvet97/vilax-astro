@@ -1,0 +1,41 @@
+---
+/**
+ * Home page template. PLACEHOLDER content: the real Home (Figma
+ * Home_dk_v4, node 2082:3871) is built in the Astro-owned pages phase.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Locale } from '../i18n/config';
+import { getRouteAlternates } from '../i18n/routes';
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+
+// SEO copy from production (www.vilax.es).
+const seo: Record<Locale, { title: string; description: string; heading: string }> = {
+  es: {
+    title: 'VILAX | Agencia de Marketing Digital',
+    description:
+      'En VILAX unimos estrategia, creatividad y ejecución para ayudar a empresas a crecer con una presencia digital sólida, coherente y rentable.',
+    heading: 'Agencia de Marketing Digital',
+  },
+  ca: {
+    title: 'VILAX | Agència de Marketing Digital',
+    description:
+      "A VILAX acompanyem empreses que volen créixer amb una presència digital més sòlida, coherent i rendible. Treballem des de l'estratègia fins a l'execució.",
+    heading: 'Agència de Marketing Digital',
+  },
+  en: {
+    title: 'VILAX | Digital Marketing Agency',
+    description:
+      'At VILAX, we partner with companies looking to grow through a more robust, consistent, and profitable digital presence. We handle everything from strategy to execution.',
+    heading: 'Digital Marketing Agency',
+  },
+};
+---
+
+<BaseLayout locale={locale} title={seo[locale].title} description={seo[locale].description} alternates={getRouteAlternates('home')}>
+  <section class="px-page py-6xl">
+    <h1 class="t-display-sm lg:t-display-xl max-w-[16ch]">{seo[locale].heading}</h1>
+    <p class="t-lead mt-xl max-w-[48ch] text-text-muted">{seo[locale].description}</p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,238 @@
+---
+/**
+ * Site header (Figma Components → Header: 1268:15098 light, 1268:15099 dark).
+ *
+ * Navigation comes from the WordPress `primary` menu:
+ *   - item without children        → link
+ *   - item with children           → dropdown
+ *   - item with 3 levels (Servicios) → mega panel with one column per group
+ * Logo, language switcher and the Contact CTA are fixed in Astro.
+ *
+ * Provisional (not designed in Figma yet): mega/dropdown panels and the
+ * mobile menu. They use design tokens only and should be revisited when
+ * their designs exist.
+ */
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '../../i18n/config';
+import { getRoutePath, type Alternate } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+import { getMenu, isActive, isMegaItem } from '../../lib/navigation';
+import MenuLink from '../navigation/MenuLink.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import Logo from './Logo.astro';
+
+type Props = {
+  locale: Locale;
+  alternates?: Alternate[];
+  surface?: 'light' | 'dark';
+};
+
+const { locale, alternates, surface = 'light' } = Astro.props;
+const t = useTranslations(locale);
+const primary = await getMenu('primary', locale);
+const currentPath = Astro.url.pathname;
+const dark = surface === 'dark';
+
+const surfaceClass = dark ? 'bg-bg-inverse text-text-inverse' : 'bg-bg text-text';
+const borderClass = dark ? 'border-border-strong' : 'border-border';
+const hoverClass = dark ? 'hover:text-text-inverse-muted' : 'hover:text-text-muted';
+const mutedClass = dark ? 'text-text-inverse-muted' : 'text-text-subtle';
+const navItemClass = `t-label flex items-center gap-3xs px-sm py-2xs uppercase whitespace-nowrap ${hoverClass}`;
+---
+
+<header class:list={['relative z-40 border-b', surfaceClass, borderClass]}>
+  <a
+    href="#main"
+    class="t-label sr-only bg-accent px-sm py-2xs text-text-on-accent focus:not-sr-only focus:absolute focus:top-2xs focus:left-2xs"
+  >
+    {t('nav.skipToContent')}
+  </a>
+
+  <div class="px-page flex items-center justify-between gap-lg py-sm">
+    <a href={getRoutePath('home', locale)} aria-label={t('nav.home')} class="shrink-0">
+      <Logo color={dark ? 'white' : 'black'} />
+    </a>
+
+    <!-- Desktop navigation -->
+    <nav aria-label={t('nav.main')} class="hidden lg:block">
+      <ul class="flex items-center">
+        {
+          primary.map((item, i) => {
+            const panelId = `nav-panel-${i}`;
+            if (item.children.length === 0) {
+              return (
+                <li>
+                  <MenuLink item={item} currentPath={currentPath} class={navItemClass} />
+                </li>
+              );
+            }
+            const mega = isMegaItem(item);
+            return (
+              <li class:list={[!mega && 'relative']}>
+                <button
+                  type="button"
+                  class:list={[navItemClass, isActive(item, currentPath) && 'underline underline-offset-4']}
+                  aria-expanded="false"
+                  aria-controls={panelId}
+                  data-disclosure
+                  data-disclosure-group="header"
+                >
+                  {item.label}
+                  <Icon name="ri:arrow-down-s-line" class="size-sm" aria-hidden="true" />
+                </button>
+
+                {mega ? (
+                  <div
+                    id={panelId}
+                    hidden
+                    class:list={['absolute inset-x-0 top-full z-50 border-b', surfaceClass, borderClass]}
+                  >
+                    <div class="px-page grid grid-cols-5 gap-md py-2xl">
+                      {item.children.map((group) => (
+                        <div class="flex flex-col gap-sm">
+                          <MenuLink
+                            item={group}
+                            currentPath={currentPath}
+                            class={`t-label uppercase ${mutedClass} ${hoverClass}`}
+                          />
+                          <ul class="flex flex-col gap-xs">
+                            {group.children.map((link) => (
+                              <li>
+                                <MenuLink item={link} currentPath={currentPath} class={`t-body-sm ${hoverClass}`} />
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <ul
+                    id={panelId}
+                    hidden
+                    class:list={['absolute left-0 top-full z-50 min-w-full border py-2xs', surfaceClass, borderClass]}
+                  >
+                    {item.href && (
+                      <li>
+                        <MenuLink
+                          item={{ ...item, children: [] }}
+                          currentPath={currentPath}
+                          class={`t-body-sm block whitespace-nowrap px-sm py-2xs ${hoverClass}`}
+                        />
+                      </li>
+                    )}
+                    {item.children.map((link) => (
+                      <li>
+                        <MenuLink
+                          item={link}
+                          currentPath={currentPath}
+                          class={`t-body-sm block whitespace-nowrap px-sm py-2xs ${hoverClass}`}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-sm">
+      <LanguageSwitcher id="lang-desktop" locale={locale} alternates={alternates} surface={surface} class="hidden lg:block" />
+      <a
+        href={getRoutePath('contact', locale)}
+        class="t-label hidden items-center justify-center gap-3xs bg-accent px-lg py-xs uppercase text-text-on-accent lg:inline-flex"
+      >
+        {t('nav.contact')}
+        <Icon name="ri:arrow-right-line" class="size-md" aria-hidden="true" />
+      </a>
+
+      <!-- Mobile menu toggle -->
+      <button
+        type="button"
+        class="flex items-center p-2xs lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        aria-label={t('nav.openMenu')}
+        data-disclosure
+        data-disclosure-group="header"
+      >
+        <Icon name="ri:menu-line" class="size-lg" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile navigation (provisional: not designed in Figma) -->
+  <nav
+    id="mobile-nav"
+    hidden
+    aria-label={t('nav.main')}
+    class:list={[
+      'absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-100%)] overflow-y-auto border-b lg:hidden',
+      surfaceClass,
+      borderClass,
+    ]}
+  >
+    <ul class="px-page flex flex-col py-lg">
+      {
+        primary.map((item) =>
+          item.children.length === 0 ? (
+            <li class:list={['border-b', borderClass]}>
+              <MenuLink item={item} currentPath={currentPath} class="t-label block py-sm uppercase" />
+            </li>
+          ) : (
+            <li class:list={['border-b', borderClass]}>
+              <details class="group">
+                <summary class="t-label flex cursor-pointer list-none items-center justify-between py-sm uppercase">
+                  {item.label}
+                  <Icon name="ri:arrow-down-s-line" class="size-md transition-transform group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <ul class="flex flex-col gap-lg pb-lg">
+                  {item.href && (
+                    <li>
+                      <MenuLink item={{ ...item, children: [] }} currentPath={currentPath} class="t-body-sm" />
+                    </li>
+                  )}
+                  {item.children.map((child) =>
+                    child.children.length === 0 ? (
+                      <li>
+                        <MenuLink item={child} currentPath={currentPath} class="t-body-sm" />
+                      </li>
+                    ) : (
+                      <li class="flex flex-col gap-xs">
+                        <MenuLink item={child} currentPath={currentPath} class={`t-caption uppercase ${mutedClass}`} />
+                        <ul class="flex flex-col gap-2xs">
+                          {child.children.map((link) => (
+                            <li>
+                              <MenuLink item={link} currentPath={currentPath} class="t-body-sm" />
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </details>
+            </li>
+          ),
+        )
+      }
+    </ul>
+    <div class="px-page flex items-center justify-between gap-sm pb-lg">
+      <LanguageSwitcher id="lang-mobile" locale={locale} alternates={alternates} surface={surface} />
+      <a
+        href={getRoutePath('contact', locale)}
+        class="t-label inline-flex items-center justify-center gap-3xs bg-accent px-lg py-xs uppercase text-text-on-accent"
+      >
+        {t('nav.contact')}
+        <Icon name="ri:arrow-right-line" class="size-md" aria-hidden="true" />
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  import '../../scripts/disclosure';
+</script>

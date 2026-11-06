@@ -1,0 +1,46 @@
+---
+/**
+ * VILAX wordmark (Figma raster asset).
+ *  - `header`: 164×59 box showing the full image (Figma Header 1266:15015).
+ *  - `footer`: 139×35 box cropping the image's built-in padding (Figma Footer 1428:1860).
+ * TODO: replace with an SVG logo when available (sharper, lighter).
+ */
+import { Image } from 'astro:assets';
+import logoBlack from '../../assets/brand/logo-black.png';
+import logoWhite from '../../assets/brand/logo-white.png';
+
+type Props = {
+  color?: 'black' | 'white';
+  size?: 'header' | 'footer';
+  class?: string;
+};
+
+const { color = 'black', size = 'header', class: className } = Astro.props;
+const src = color === 'white' ? logoWhite : logoBlack;
+---
+
+{
+  size === 'header' ? (
+    <Image
+      src={src}
+      alt="VILAX"
+      width={164}
+      height={59}
+      densities={[1, 2]}
+      loading="eager"
+      fetchpriority="high"
+      class:list={['block h-[59px] w-[164px] object-cover', className]}
+    />
+  ) : (
+    <span class:list={['relative block h-[35px] w-[139px] overflow-hidden', className]}>
+      <Image
+        src={src}
+        alt="VILAX"
+        width={164}
+        height={60}
+        densities={[1, 2]}
+        class="absolute top-[-36.03%] left-[-8.63%] h-[172.05%] w-[117.99%] max-w-none"
+      />
+    </span>
+  )
+}

@@ -1,0 +1,35 @@
+---
+/**
+ * Renders one WordPress menu item as a link (or a plain label when the item
+ * has no URL). Handles external links, new-tab targets and aria-current.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import type { MenuItem } from '../../lib/navigation';
+
+type Props = HTMLAttributes<'a'> & {
+  item: MenuItem;
+  currentPath?: string;
+};
+
+const { item, currentPath, class: className, ...attrs } = Astro.props;
+const isCurrent = !!item.href && !item.external && item.href === currentPath;
+---
+
+{
+  item.href ? (
+    <a
+      href={item.href}
+      class={className}
+      aria-current={isCurrent ? 'page' : undefined}
+      target={item.newTab ? '_blank' : undefined}
+      rel={item.external ? (item.newTab ? 'noopener noreferrer' : 'noopener') : undefined}
+      {...attrs}
+    >
+      <slot>{item.label}</slot>
+    </a>
+  ) : (
+    <span class={className}>
+      <slot>{item.label}</slot>
+    </span>
+  )
+}

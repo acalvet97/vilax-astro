@@ -1,0 +1,187 @@
+/*
+ * VILAX design tokens — mirror of the Figma variables collection
+ * (file g5P0oB7Hi3HO2zHTx7bV11, "VILAX WEB 2026").
+ *
+ * Naming follows Figma 1:1, mapped to Tailwind v4 theme namespaces:
+ *   Figma --color-text        → --color-text        → text-text, bg-text, border-text
+ *   Figma --space-xl          → --spacing-xl        → p-xl, gap-xl, mt-xl
+ *   Figma --font-size-5xl     → --text-5xl          → text-5xl
+ *   Figma --radius-full       → --radius-full       → rounded-full
+ *   Figma text style t-*      → @utility t-*        → t-heading-xl, t-body-md
+ *
+ * Tailwind's default palette, spacing scale and type scale are reset on purpose:
+ * only design-system values exist. Use an arbitrary value ([…]) only for true one-offs.
+ *
+ * Source pages checked: Home v4, Blog article, Sub-service, About.
+ * TODO: compare against a full export of the Figma variables collection.
+ */
+
+@theme {
+  /* ---------- Reset Tailwind defaults ---------- */
+  --color-*: initial;
+  --spacing: initial;
+  --text-*: initial;
+  --font-*: initial;
+  --font-weight-*: initial;
+  --radius-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+
+  /* ---------- Typography ---------- */
+  --font-base: var(--font-geist), system-ui, sans-serif;
+  --default-font-family: var(--font-base);
+
+  --font-weight-regular: 400;
+
+  --text-sm: 0.875rem; /* 14 */
+  --text-md: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-3xl: 2rem; /* 32 */
+  --text-4xl: 2.5rem; /* 40 */
+  --text-5xl: 3.25rem; /* 52 */
+  --text-6xl: 4rem; /* 64 */
+  --text-7xl: 5rem; /* 80 */
+  --text-8xl: 6rem; /* 96 */
+
+  --leading-none: 1;
+  --leading-tight: 1.1;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+
+  --tracking-tight: -0.02em; /* Figma −2% */
+  --tracking-normal: 0;
+
+  /* ---------- Color: text ---------- */
+  --color-text: #181818;
+  --color-text-muted: #5a5a5a;
+  --color-text-subtle: #848484;
+  --color-text-inverse: #ffffff;
+  --color-text-inverse-muted: #eaeaea;
+  --color-text-on-accent: #181818;
+
+  /* ---------- Color: background ---------- */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f3f3f3;
+  --color-bg-highlight: #fffcec;
+  --color-bg-inverse: #040404;
+  --color-bg-inverse-alt: #2c2c2c;
+
+  /* ---------- Color: accent ---------- */
+  --color-accent: #ffe843;
+
+  /* ---------- Color: border ---------- */
+  --color-border: #d7d7d7;
+  --color-border-strong: #181818;
+  --color-border-inverse: #414141;
+  --color-border-inverse-strong: #ffffff;
+
+  /* ---------- Spacing (Figma --space-*) ---------- */
+  --spacing-3xs: 0.25rem; /* 4 */
+  --spacing-2xs: 0.5rem; /* 8 */
+  --spacing-xs: 0.75rem; /* 12 */
+  --spacing-sm: 1rem; /* 16 */
+  --spacing-md: 1.25rem; /* 20 */
+  --spacing-lg: 1.5rem; /* 24 */
+  --spacing-xl: 2rem; /* 32 */
+  --spacing-2xl: 3rem; /* 48 */
+  --spacing-3xl: 4rem; /* 64 */
+  --spacing-4xl: 5rem; /* 80 */
+  --spacing-5xl: 6rem; /* 96 */
+  --spacing-6xl: 8rem; /* 128 */
+  --spacing-7xl: 10rem; /* 160 */
+
+  /* ---------- Radius ---------- */
+  --radius-full: 9999px;
+}
+
+/*
+ * Border widths (Figma --border-width-*). Tailwind has no theme namespace for
+ * these: use `border` (1px = default) and `border-4` (= thick).
+ */
+:root {
+  --border-width-default: 1px;
+  --border-width-thick: 4px;
+}
+
+/* ---------- Text styles (Figma t-*) ---------- */
+
+@utility t-display-xl {
+  font-size: var(--text-8xl);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-display-lg {
+  font-size: var(--text-7xl);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-display-sm {
+  font-size: var(--text-6xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-heading-xl {
+  font-size: var(--text-5xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-heading-lg {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-heading-md {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-heading-sm {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-lead {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-body-lg {
+  font-size: var(--text-xl);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-body-md {
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-body-sm {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-label {
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
+@utility t-caption {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--font-weight-regular);
+}
