@@ -1,0 +1,52 @@
+---
+/**
+ * Post card (Figma "Article_Heading" in the archive 2034:3424 and in
+ * "Insights relacionados" 2034:792). The whole card is clickable through the
+ * title link.
+ */
+import type { Locale } from '../../i18n/config';
+import { formatDate, useTranslations } from '../../i18n/ui';
+import type { PostCard } from '../../lib/blog';
+import AuthorByline from './AuthorByline.astro';
+
+type Props = {
+  card: PostCard;
+  locale: Locale;
+  /** `archive`: 40px title, subtle meta. `related`: 32px title, muted meta. */
+  variant?: 'archive' | 'related';
+  headingLevel?: 'h2' | 'h3';
+};
+
+const { card, locale, variant = 'archive', headingLevel: Heading = 'h2' } = Astro.props;
+const t = useTranslations(locale);
+const archive = variant === 'archive';
+---
+
+<article
+  class:list={[
+    'group relative flex h-full flex-col justify-between gap-4xl border-b border-border pb-2xl',
+    archive && 'lg:pr-3xl',
+  ]}
+>
+  <div class:list={['flex flex-col', archive ? 'gap-xl' : 'gap-lg']}>
+    <p class:list={['t-body-sm', archive ? 'text-text-subtle' : 'text-text-muted']}>
+      <time datetime={card.date.toISOString()}>{formatDate(card.date, locale)}</time>
+      <span aria-hidden="true">&nbsp;·&nbsp;</span>
+      {card.readingMinutes} {t('blog.minutesRead')}
+      {
+        card.category && (
+          <>
+            <span aria-hidden="true">&nbsp;·&nbsp;</span>
+            <span class="uppercase">{card.category.name}</span>
+          </>
+        )
+      }
+    </p>
+    <Heading class:list={[archive ? 't-heading-md lg:t-heading-lg' : 't-heading-md']}>
+      <a href={card.path} class="after:absolute after:inset-0 group-hover:underline group-hover:underline-offset-4">
+        {card.title}
+      </a>
+    </Heading>
+  </div>
+  {card.author && <AuthorByline author={card.author} locale={locale} />}
+</article>

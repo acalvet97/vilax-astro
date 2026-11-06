@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name: VILAX Headless
- * Description: Headless setup for the Astro frontend: menu locations, author fields (ACF), rebuild trigger and frontend redirect.
- * Version:     0.1.0
+ * Description: Headless setup for the Astro frontend: menu locations, ACF Local JSON, rebuild trigger and frontend redirect.
+ * Version:     0.3.0
  *
- * Install: copy this file to wp-content/mu-plugins/ (must-use plugins load automatically).
+ * Install: copy this file to wp-content/mu-plugins/ (must-use plugins load automatically)
+ * and create the writable folder wp-content/acf-json/ (ACF Local JSON).
  *
  * Optional constants in wp-config.php:
  *   define( 'VILAX_DEPLOY_HOOK_URL', 'https://api.netlify.com/build_hooks/xxxx' ); // static rebuild webhook
@@ -27,52 +28,25 @@ add_action( 'after_setup_theme', function () {
 }, 20 );
 
 /* -------------------------------------------------------------------------
- * 2. Author profile fields (ACF) → GraphQL `User.authorProfile`
- *    The bio uses the core "Biographical Info" field (User.description),
- *    translated with WPML String Translation → "Translate User properties".
+ * 2. ACF field groups: managed in the ACF Pro UI, saved as Local JSON
+ *    Every group saved in ACF is also written to wp-content/acf-json/
+ *    (backup + sync between environments via ACF → Field Groups → Sync).
+ *    A copy of each JSON is kept in the Astro repo under wordpress/acf-json/.
+ *
+ *    Groups and GraphQL names the Astro site relies on:
+ *      User.authorProfile { jobTitle linkedinUrl }   (photo = Gravatar, User.avatar)
+ *      Post.postFields    { tldr faqs { tituloFaq textFaq } }
+ *    Renaming them breaks the GraphQL query, and the Astro build fails.
  * ---------------------------------------------------------------------- */
-add_action( 'acf/include_fields', function () {
-	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
-		return;
-	}
-	acf_add_local_field_group( [
-		'key'                => 'group_vilax_author_profile',
-		'title'              => 'Perfil de autor',
-		'fields'             => [
-			[
-				'key'                => 'field_vilax_author_photo',
-				'label'              => 'Foto',
-				'name'               => 'photo',
-				'type'               => 'image',
-				'return_format'      => 'array',
-				'preview_size'       => 'thumbnail',
-				'show_in_graphql'    => 1,
-				'graphql_field_name' => 'photo',
-			],
-			[
-				'key'                => 'field_vilax_author_job_title',
-				'label'              => 'Cargo',
-				'name'               => 'job_title',
-				'type'               => 'text',
-				'show_in_graphql'    => 1,
-				'graphql_field_name' => 'jobTitle',
-			],
-			[
-				'key'                => 'field_vilax_author_linkedin',
-				'label'              => 'LinkedIn (URL)',
-				'name'               => 'linkedin_url',
-				'type'               => 'url',
-				'show_in_graphql'    => 1,
-				'graphql_field_name' => 'linkedinUrl',
-			],
-		],
-		'location'           => [
-			[ [ 'param' => 'user_form', 'operator' => '==', 'value' => 'all' ] ],
-		],
-		'show_in_graphql'    => 1,
-		'graphql_field_name' => 'authorProfile',
-		'graphql_types'      => [ 'User' ],
-	] );
+const VILAX_ACF_JSON_DIR = WP_CONTENT_DIR . '/acf-json';
+
+add_filter( 'acf/settings/save_json', function () {
+	return VILAX_ACF_JSON_DIR;
+} );
+
+add_filter( 'acf/settings/load_json', function ( $paths ) {
+	$paths[] = VILAX_ACF_JSON_DIR;
+	return $paths;
 } );
 
 /* -------------------------------------------------------------------------

@@ -1,0 +1,30 @@
+---
+/**
+ * "En este artículo" (Figma 2034:740): links to the article's h2 sections.
+ */
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+
+type Props = { items: Array<{ id: string; text: string }>; locale: Locale; class?: string };
+
+const { items, locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<nav aria-labelledby="toc-title" class:list={['flex flex-col gap-2xl bg-bg-alt p-xl lg:p-2xl', className]}>
+  <p id="toc-title" class="t-label flex items-center gap-xs uppercase text-text-subtle">
+    <span class="size-[0.625rem] shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+    {t('blog.inThisArticle')}
+  </p>
+  <ol class="t-body-sm list-decimal pl-lg marker:text-text">
+    {
+      items.map((item) => (
+        <li>
+          <a href={`#${item.id}`} class="hover:underline hover:underline-offset-4">
+            {item.text}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>

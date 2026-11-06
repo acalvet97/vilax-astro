@@ -1,0 +1,19 @@
+---
+/**
+ * Every WordPress-driven blog URL, in all locales (see getBlogPaths):
+ *   /insights/  /insights/page/2/  /category/<slug>/  /<post-slug>/
+ *   /en/insights/  /en/<post-slug>/ …
+ * Fixed Astro pages (src/pages/**) take priority over this catch-all route.
+ */
+import { getBlogPaths, type ArchiveProps, type PostProps } from '../lib/blog';
+import BlogArchive from '../templates/BlogArchive.astro';
+import BlogPost from '../templates/BlogPost.astro';
+
+export async function getStaticPaths() {
+  return getBlogPaths();
+}
+
+const props = Astro.props as ArchiveProps | PostProps;
+---
+
+{props.template === 'archive' ? <BlogArchive {...props} /> : <BlogPost {...props} />}

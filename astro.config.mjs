@@ -51,6 +51,9 @@ export default defineConfig({
 
   image: {
     domains: [WP_MEDIA_HOST],
+    // Author photos come from Gravatar; optimized at build time so visitors
+    // never request gravatar.com directly.
+    remotePatterns: [{ protocol: 'https', hostname: '**.gravatar.com' }],
   },
 
   integrations: [

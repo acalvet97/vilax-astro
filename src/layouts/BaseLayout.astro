@@ -28,6 +28,7 @@ const { headerSurface = 'light', ...seo } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <Font cssVariable="--font-geist" preload />
     <Seo {...seo} />
+    <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
     <Header locale={seo.locale} alternates={seo.alternates} surface={headerSurface} />

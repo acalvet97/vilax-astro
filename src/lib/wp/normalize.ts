@@ -5,7 +5,7 @@ import { WP_GRAPHQL_URL } from 'astro:env/server';
 import { site } from '../../config/site';
 import { localeFromWpml, type Locale } from '../../i18n/config';
 import { buildPath, getRoutePath } from '../../i18n/routes';
-import type { WpCategory, WpImage, WpMenuItem, WpPost, WpSeo, WpTranslation } from './queries';
+import type { WpCategory, WpMenuItem, WpPost, WpSeo, WpTranslation } from './queries';
 
 const wpOrigin = WP_GRAPHQL_URL ? new URL(WP_GRAPHQL_URL).origin : null;
 
@@ -46,6 +46,48 @@ export function rewriteWpLinks(html: string): string {
   return html.replace(new RegExp(`${escaped}(?!/wp-content/)(/[^"'\\s<>]*)?`, 'g'), (_m, path?: string) => path || '/');
 }
 
+// ---------- Post content processing ----------
+
+export type TocItem = { id: string; text: string };
+
+function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Gives every <h2> an id (keeps an existing one, e.g. a Gutenberg anchor) and
+ * returns the list of h2s for the article's table of contents.
+ */
+export function addHeadingAnchors(html: string): { html: string; toc: TocItem[] } {
+  const toc: TocItem[] = [];
+  const used = new Set<string>();
+  const out = html.replace(/<h2(\s[^>]*)?>([\s\S]*?)<\/h2>/gi, (_match, attrs = '', inner: string) => {
+    const text = stripHtml(inner);
+    if (!text) return `<h2${attrs}>${inner}</h2>`;
+    const existing = /\sid=["']([^"']+)["']/i.exec(attrs)?.[1];
+    let id = existing ?? (slugify(text) || 'seccion');
+    if (!existing) {
+      const base = id;
+      for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    }
+    used.add(id);
+    toc.push({ id, text });
+    return existing ? `<h2${attrs}>${inner}</h2>` : `<h2${attrs} id="${id}">${inner}</h2>`;
+  });
+  return { html: out, toc };
+}
+
+/** Reading time in minutes (≈200 words per minute), minimum 1. */
+export function readingMinutes(html: string): number {
+  const words = stripHtml(html).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 // ---------- Shared shapes ----------
 
 export type Seo = {
@@ -70,16 +112,6 @@ export function normalizeSeo(seo: WpSeo): Seo {
     jsonLd: seo?.schema?.raw ? rewriteWpLinks(seo.schema.raw) : undefined,
     // Yoast's canonical is ignored on purpose: it points at the WP host.
     // The canonical is derived from the Astro URL in <Seo />.
-  };
-}
-
-export function normalizeImage(image: WpImage | undefined): Image | undefined {
-  if (!image?.sourceUrl) return undefined;
-  return {
-    src: image.sourceUrl,
-    alt: image.altText ?? '',
-    width: image.mediaDetails?.width ?? undefined,
-    height: image.mediaDetails?.height ?? undefined,
   };
 }
 
@@ -177,6 +209,11 @@ export const categoryPath = (locale: Locale, slug: string) => getRoutePath('cate
 export const entryId = (locale: Locale, slug: string) => `${locale}/${slug}`;
 
 export function normalizePost(post: WpPost, locale: Locale) {
+  const rawContent = post.content ? rewriteWpLinks(post.content) : '';
+  const { html: content, toc } = addHeadingAnchors(rawContent);
+  const faqs = (post.postFields?.faqs ?? []).flatMap((f) =>
+    f.question?.trim() && f.answer?.trim() ? [{ question: f.question.trim(), answer: rewriteWpLinks(f.answer) }] : [],
+  );
   return {
     id: entryId(locale, post.slug),
     data: {
@@ -186,7 +223,11 @@ export function normalizePost(post: WpPost, locale: Locale) {
       path: postPath(locale, post.slug),
       title: decodeEntities(post.title),
       excerpt: post.excerpt ? stripHtml(post.excerpt) : '',
-      content: post.content ? rewriteWpLinks(post.content) : '',
+      content,
+      toc,
+      readingMinutes: readingMinutes(rawContent),
+      tldr: post.postFields?.tldr?.trim() || undefined,
+      faqs,
       date: post.date,
       modified: post.modified,
       author: post.author?.node ? entryId(locale, post.author.node.slug) : undefined,
@@ -200,9 +241,11 @@ export function normalizePost(post: WpPost, locale: Locale) {
 export function normalizeAuthor(post: WpPost, locale: Locale) {
   const author = post.author?.node;
   if (!author) return undefined;
+  // Photo = Gravatar. Hidden when the author has no Gravatar (avoids the generic placeholder).
   const photo =
-    normalizeImage(author.authorProfile?.photo?.node) ??
-    (author.avatar?.url ? { src: author.avatar.url, alt: author.name, width: 512, height: 512 } : undefined);
+    author.avatar?.url && author.avatar.foundAvatar !== false
+      ? { src: author.avatar.url, alt: author.name, width: 512, height: 512 }
+      : undefined;
   return {
     id: entryId(locale, author.slug),
     data: {

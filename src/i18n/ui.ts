@@ -5,6 +5,14 @@
 import type { Locale } from './config';
 
 const es = {
+  'blog.minutesRead': 'minutos de lectura',
+  'blog.publishedBy': 'Publicado por',
+  'blog.inThisArticle': 'En este artículo',
+  'blog.related': 'Insights relacionados',
+  'blog.viewAll': 'Ver todos',
+  'blog.categories': 'Categorías',
+  'blog.faqs': 'FAQs',
+  'pagination.label': 'Paginación',
   'nav.main': 'Navegación principal',
   'nav.menu': 'Menú',
   'nav.openMenu': 'Abrir menú',
@@ -20,10 +28,6 @@ const es = {
   'nav.skipToContent': 'Saltar al contenido',
   'nav.language': 'Idioma',
   'blog.title': 'Insights',
-  'blog.readMore': 'Leer artículo',
-  'blog.publishedOn': 'Publicado el',
-  'blog.by': 'Por',
-  'blog.latestFrom': 'Artículos de',
   'blog.empty': 'Todavía no hay artículos.',
   'pagination.previous': 'Anterior',
   'pagination.next': 'Siguiente',
@@ -33,6 +37,14 @@ const es = {
 type UiKey = keyof typeof es;
 
 const ca: Record<UiKey, string> = {
+  'blog.minutesRead': 'minuts de lectura',
+  'blog.publishedBy': 'Publicat per',
+  'blog.inThisArticle': 'En aquest article',
+  'blog.related': 'Insights relacionats',
+  'blog.viewAll': 'Veure-ho tot',
+  'blog.categories': 'Categories',
+  'blog.faqs': 'FAQs',
+  'pagination.label': 'Paginació',
   'nav.main': 'Navegació principal',
   'nav.menu': 'Menú',
   'nav.openMenu': 'Obre el menú',
@@ -48,10 +60,6 @@ const ca: Record<UiKey, string> = {
   'nav.skipToContent': 'Salta al contingut',
   'nav.language': 'Idioma',
   'blog.title': 'Insights',
-  'blog.readMore': "Llegeix l'article",
-  'blog.publishedOn': 'Publicat el',
-  'blog.by': 'Per',
-  'blog.latestFrom': 'Articles de',
   'blog.empty': 'Encara no hi ha articles.',
   'pagination.previous': 'Anterior',
   'pagination.next': 'Següent',
@@ -59,6 +67,14 @@ const ca: Record<UiKey, string> = {
 };
 
 const en: Record<UiKey, string> = {
+  'blog.minutesRead': 'min read',
+  'blog.publishedBy': 'Published by',
+  'blog.inThisArticle': 'In this article',
+  'blog.related': 'Related insights',
+  'blog.viewAll': 'View all',
+  'blog.categories': 'Categories',
+  'blog.faqs': 'FAQs',
+  'pagination.label': 'Pagination',
   'nav.main': 'Main navigation',
   'nav.menu': 'Menu',
   'nav.openMenu': 'Open menu',
@@ -74,10 +90,6 @@ const en: Record<UiKey, string> = {
   'nav.skipToContent': 'Skip to content',
   'nav.language': 'Language',
   'blog.title': 'Insights',
-  'blog.readMore': 'Read article',
-  'blog.publishedOn': 'Published on',
-  'blog.by': 'By',
-  'blog.latestFrom': 'Articles by',
   'blog.empty': 'No articles yet.',
   'pagination.previous': 'Previous',
   'pagination.next': 'Next',
@@ -92,6 +104,7 @@ export function useTranslations(locale: Locale) {
 
 const dateLocales: Record<Locale, string> = { es: 'es-ES', ca: 'ca-ES', en: 'en-GB' };
 
+/** Date as in Figma: 19/05/2025. */
 export function formatDate(date: Date, locale: Locale) {
-  return new Intl.DateTimeFormat(dateLocales[locale], { dateStyle: 'long' }).format(date);
+  return new Intl.DateTimeFormat(dateLocales[locale], { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
 }

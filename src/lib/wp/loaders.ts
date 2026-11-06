@@ -7,6 +7,7 @@ import type { Loader, LoaderContext } from 'astro/loaders';
 import { locales, wpmlCodes, type Locale } from '../../i18n/config';
 import { wpQueryAll } from './client';
 import { getMockMenuItems } from './mocks/menus';
+import { getMockCategories, getMockPosts } from './mocks/posts';
 import { buildMenuTree, normalizeAuthor, normalizeCategory, normalizePost, type Translation } from './normalize';
 import {
   CATEGORIES_QUERY,
@@ -27,7 +28,8 @@ type Entry = { id: string; data: Record<string, unknown> };
 
 /** Posts per locale, fetched once per build and shared by the posts and authors loaders. */
 const postsCache = new Map<Locale, Promise<WpPost[]>>();
-function fetchPosts(locale: Locale): Promise<WpPost[]> {
+function fetchPosts(locale: Locale, source: DataSource): Promise<WpPost[]> {
+  if (source === 'mock') return Promise.resolve(getMockPosts(locale));
   if (!postsCache.has(locale)) {
     postsCache.set(locale, wpQueryAll<PostsData, WpPost>(POSTS_QUERY, { language: wpmlCodes[locale] }, (d) => d.posts));
   }
@@ -58,13 +60,11 @@ function wpLoader(name: string, fetchEntries: (source: DataSource, ctx: LoaderCo
 }
 
 // ---------- Posts / authors / categories ----------
-// No mocks yet: in mock mode these collections are empty (blog pages render their empty state).
 
 export function postsLoader(): Loader {
   return wpLoader('wp-posts', async (source) => {
-    if (source === 'mock') return [];
     const perLocale = await Promise.all(
-      locales.map(async (locale) => (await fetchPosts(locale)).map((p) => normalizePost(p, locale))),
+      locales.map(async (locale) => (await fetchPosts(locale, source)).map((p) => normalizePost(p, locale))),
     );
     return perLocale.flat();
   });
@@ -77,10 +77,9 @@ export function postsLoader(): Loader {
  */
 export function authorsLoader(): Loader {
   return wpLoader('wp-authors', async (source) => {
-    if (source === 'mock') return [];
     const byId = new Map<string, NonNullable<ReturnType<typeof normalizeAuthor>>>();
     for (const locale of locales) {
-      for (const post of await fetchPosts(locale)) {
+      for (const post of await fetchPosts(locale, source)) {
         const author = normalizeAuthor(post, locale);
         if (author && !byId.has(author.id)) byId.set(author.id, author);
       }
@@ -98,11 +97,11 @@ export function authorsLoader(): Loader {
 
 export function categoriesLoader(): Loader {
   return wpLoader('wp-categories', async (source) => {
-    if (source === 'mock') return [];
     const perLocale = await Promise.all(
       locales.map(async (locale) =>
-        (
-          await wpQueryAll<CategoriesData, WpCategory>(CATEGORIES_QUERY, { language: wpmlCodes[locale] }, (d) => d.categories)
+        (source === 'mock'
+          ? getMockCategories(locale)
+          : await wpQueryAll<CategoriesData, WpCategory>(CATEGORIES_QUERY, { language: wpmlCodes[locale] }, (d) => d.categories)
         ).map((c) => normalizeCategory(c, locale)),
       ),
     );
@@ -115,22 +114,26 @@ export function categoriesLoader(): Loader {
 /**
  * One entry per menu location and locale, id `<location>/<locale>`.
  * Every location must have items in every locale: an empty or missing menu
- * fails the build instead of shipping an incomplete header/footer.
+ * fails `astro build` instead of shipping an incomplete header/footer.
+ * In `astro dev` only, a missing menu falls back to its mock (with a warning)
+ * so the rest of the WordPress content can be worked on.
  */
 export function menusLoader(): Loader {
-  return wpLoader('wp-menus', async (source) => {
+  return wpLoader('wp-menus', async (source, { logger }) => {
     const entries: Entry[] = [];
     for (const location of MENU_LOCATIONS) {
       for (const locale of locales) {
-        const items =
+        let items =
           source === 'mock'
             ? getMockMenuItems(location, locale)
             : await fetchMenuItems(location, locale);
         if (items.length === 0) {
-          throw new Error(
+          const message =
             `WordPress menu "${location}" has no items for language "${locale}". ` +
-              `Assign a menu to this location in WP (Appearance → Menus) for every language.`,
-          );
+            `Assign a menu to this location in WP (Appearance → Menus) for every language.`;
+          if (!import.meta.env.DEV) throw new Error(message);
+          logger.warn(`${message} Using its MOCK in dev.`);
+          items = getMockMenuItems(location, locale);
         }
         entries.push({ id: `${location}/${locale}`, data: { location, locale, items: buildMenuTree(items) } });
       }

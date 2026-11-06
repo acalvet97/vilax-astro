@@ -5,7 +5,7 @@
  *   - WPGraphQL                    → base schema
  *   - WPML (GraphQL enabled)       → where: { language }, language, translations
  *   - WPGraphQL Yoast SEO          → seo { … }
- *   - WPGraphQL for ACF            → authorProfile { … } (field group in wordpress/mu-plugins)
+ *   - WPGraphQL for ACF            → authorProfile { … }, postFields { … } (field groups in wordpress/mu-plugins)
  */
 
 const SEO_FIELDS = /* GraphQL */ `
@@ -15,12 +15,6 @@ const SEO_FIELDS = /* GraphQL */ `
   metaRobotsNoindex
   opengraphImage { sourceUrl }
   schema { raw }
-`;
-
-const IMAGE_FIELDS = /* GraphQL */ `
-  sourceUrl
-  altText
-  mediaDetails { width height }
 `;
 
 /** Posts of one language, including their author and categories in that language. */
@@ -39,17 +33,21 @@ export const POSTS_QUERY = /* GraphQL */ `
         language { code }
         translations { slug language { code } }
         categories { nodes { slug name } }
+        postFields {
+          tldr
+          # ACF sub-field GraphQL names are tituloFaq / textFaq; aliased to question / answer.
+          faqs { question: tituloFaq answer: textFaq }
+        }
         author {
           node {
             databaseId
             slug
             name
             description
-            avatar(size: 512) { url }
+            avatar(size: 512) { url foundAvatar }
             authorProfile {
               jobTitle
               linkedinUrl
-              photo { node { ${IMAGE_FIELDS} } }
             }
             seo { ${SEO_FIELDS} }
           }
@@ -128,12 +126,6 @@ export type WpSeo = {
   schema: { raw: string | null } | null;
 } | null;
 
-export type WpImage = {
-  sourceUrl: string | null;
-  altText: string | null;
-  mediaDetails: { width: number | null; height: number | null } | null;
-} | null;
-
 export type WpTranslation = { slug: string; language: { code: string } | null };
 
 export type WpAuthor = {
@@ -141,11 +133,11 @@ export type WpAuthor = {
   slug: string;
   name: string;
   description: string | null;
-  avatar: { url: string | null } | null;
+  /** Gravatar (the author photo is managed in Gravatar, not uploaded to WP). */
+  avatar: { url: string | null; foundAvatar: boolean | null } | null;
   authorProfile: {
     jobTitle: string | null;
     linkedinUrl: string | null;
-    photo: { node: WpImage } | null;
   } | null;
   seo: WpSeo;
 };
@@ -161,6 +153,10 @@ export type WpPost = {
   language: { code: string } | null;
   translations: WpTranslation[] | null;
   categories: { nodes: Array<{ slug: string; name: string }> } | null;
+  postFields: {
+    tldr: string | null;
+    faqs: Array<{ question: string | null; answer: string | null }> | null;
+  } | null;
   author: { node: WpAuthor | null } | null;
   seo: WpSeo;
 };

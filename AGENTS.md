@@ -25,8 +25,10 @@ Languages: `es` (root), `ca` (`/ca/`), `en` (`/en/`), with translated slugs.
   (see `docs/wordpress-menus.md`); components use `src/lib/navigation.ts`, never the collection directly.
   Logo, language switcher, Contact CTA and site info (`src/config/site.ts`) are fixed in Astro.
 - **Pages**: thin route files in `src/pages/` (ES root, `ca/`, `en/`) that render a template from `src/templates/`.
-- **WordPress side**: `wordpress/mu-plugins/vilax-headless.php` (menu locations, ACF author fields,
+- **WordPress side**: `wordpress/mu-plugins/vilax-headless.php` (menu locations, ACF Local JSON,
   rebuild trigger, frontend redirect) is installed in `wp-content/mu-plugins/` on the WP server.
+  ACF field groups are managed in the ACF Pro UI; the GraphQL names Astro depends on are listed in
+  `docs/wordpress-acf.md`, and JSON copies of the groups live in `wordpress/acf-json/`.
 - **Checks**: `WP_USE_MOCKS=true npx astro check` and `astro build` (link checker reports broken internal links).
 
 ## Development

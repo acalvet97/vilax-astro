@@ -1,0 +1,125 @@
+---
+/**
+ * Blog article (Figma "ArtículoBlog", 2034:686):
+ *   heading (categories, title, date · reading time, author)
+ *   "En este artículo" table of contents (sticky on desktop)
+ *   TL;DR (ACF) → content (WordPress editor) → FAQs (ACF)
+ *   "Insights relacionados"
+ */
+import AuthorByline from '../components/blog/AuthorByline.astro';
+import Faqs from '../components/blog/Faqs.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import TableOfContents from '../components/blog/TableOfContents.astro';
+import TagList from '../components/blog/TagList.astro';
+import Prose from '../components/content/Prose.astro';
+import { getRoutePath } from '../i18n/routes';
+import { formatDate, useTranslations } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPostCategories, toPostCard, type PostProps } from '../lib/blog';
+import { stripHtml } from '../lib/wp/normalize';
+
+type Props = Omit<PostProps, 'template'>;
+
+const { locale, post, related, alternates } = Astro.props;
+const t = useTranslations(locale);
+const { data } = post;
+
+const [card, categories, relatedCards] = await Promise.all([
+  toPostCard(post),
+  getPostCategories(post),
+  Promise.all(related.map(toPostCard)),
+]);
+
+const faqSchema =
+  data.faqs.length > 0
+    ? JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: data.faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: stripHtml(f.answer) },
+        })),
+      })
+    : undefined;
+---
+
+<BaseLayout
+  locale={locale}
+  title={data.seo.title ?? `${data.title} | VILAX`}
+  description={data.seo.description ?? data.excerpt}
+  noindex={data.seo.noindex}
+  ogImage={data.seo.ogImage}
+  ogType="article"
+  jsonLd={data.seo.jsonLd}
+  alternates={alternates}
+>
+  {faqSchema && <script is:inline slot="head" type="application/ld+json" set:html={faqSchema} />}
+
+  <article>
+    <div
+      class="px-page grid gap-3xl border-b border-border pt-4xl pb-6xl lg:grid-cols-[minmax(0,925fr)_minmax(0,520fr)] lg:gap-x-[9.6875%] lg:pt-6xl"
+    >
+      <!-- Heading -->
+      <header class="flex flex-col gap-4xl border-b border-border pb-3xl lg:col-start-1 lg:gap-6xl">
+        <div class="flex flex-col gap-2xl">
+          <TagList items={categories.map((c) => ({ label: c.data.name, href: c.data.path }))} label={t('blog.categories')} />
+          <h1 class="t-heading-xl lg:t-display-sm">{data.title}</h1>
+          <p class="t-body-sm text-text-muted">
+            <time datetime={data.date.toISOString()}>{formatDate(data.date, locale)}</time>
+            <span aria-hidden="true">&nbsp;·&nbsp;</span>
+            {data.readingMinutes} {t('blog.minutesRead')}
+          </p>
+        </div>
+        {card.author && <AuthorByline author={card.author} locale={locale} />}
+      </header>
+
+      <!-- Table of contents -->
+      {
+        data.toc.length > 0 && (
+          <aside class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+            <TableOfContents items={data.toc} locale={locale} class="lg:sticky lg:top-xl" />
+          </aside>
+        )
+      }
+
+      <!-- Body -->
+      <div class="flex flex-col gap-4xl lg:col-start-1">
+        {
+          data.tldr && (
+            <div class="flex flex-col gap-xl border-l-4 border-accent pl-lg lg:pl-2xl">
+              <p class="t-heading-lg lg:t-heading-xl">TL;DR</p>
+              <p class="t-lead">{data.tldr}</p>
+            </div>
+          )
+        }
+        <Prose html={data.content} />
+        <Faqs items={data.faqs} locale={locale} />
+      </div>
+    </div>
+  </article>
+
+  <!-- Related -->
+  {
+    relatedCards.length > 0 && (
+      <section aria-labelledby="related-title" class="px-page flex flex-col gap-4xl py-4xl lg:gap-6xl lg:py-6xl">
+        <div class="flex flex-wrap items-start justify-between gap-lg">
+          <h2 id="related-title" class="t-heading-lg lg:t-heading-xl">
+            {t('blog.related')}
+          </h2>
+          <a
+            href={getRoutePath('blog', locale)}
+            class="t-label inline-flex items-center bg-accent px-lg py-xs uppercase text-text-on-accent"
+          >
+            {t('blog.viewAll')}
+          </a>
+        </div>
+        <div class="grid gap-x-md gap-y-3xl md:grid-cols-2 lg:grid-cols-3">
+          {relatedCards.map((c) => (
+            <PostCard card={c} locale={locale} variant="related" headingLevel="h3" />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
