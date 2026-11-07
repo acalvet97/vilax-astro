@@ -10,15 +10,20 @@
 :root {
   --wrapper-max: 100rem; /* 1600px of content */
   --gutter: var(--spacing-sm); /* 1rem */
+  /* Height of the sticky header bar (as production): used by the header itself,
+     sticky elements below it and anchor scroll offsets. */
+  --header-height: 80px;
 }
 @media (width >= 48rem) {
   :root {
     --gutter: var(--spacing-xl); /* 2rem */
+    --header-height: 85px;
   }
 }
 @media (width >= 64.0625rem) {
   :root {
     --gutter: var(--spacing-3xl); /* 4rem */
+    --header-height: 90px;
   }
 }
 

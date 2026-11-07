@@ -47,6 +47,23 @@ Grupo «Artículos Insights». Ubicación: *Tipo de contenido = Entrada*.
 
 Ambos son opcionales: si están vacíos, el bloque no aparece en el artículo.
 
+### CTA → `Post.cta`
+
+Franja negra con el mapa de puntos (antes de «Insights relacionados» en los artículos). Grupo propio
+para reutilizarlo en otros tipos de contenido de WordPress (p. ej. casos: basta con añadirlos a la
+ubicación). Ubicación: *Tipo de contenido = Entrada*. Archivo para importar:
+`wordpress/acf-json/group_vilax_cta.json`.
+
+| Campo | Nombre | Tipo | Nombre GraphQL |
+|---|---|---|---|
+| Antetítulo | `eyebrow` | Texto | `eyebrow` |
+| Título | `title` | Texto | `title` |
+| Texto | `text` | Área de texto (sin formato) | `text` |
+
+Todos son opcionales: cada campo vacío usa el texto genérico (`cta.*` en `src/i18n/ui.ts`). El botón
+«Cuéntanos tu proyecto» y su enlace a Contacto son fijos. En las páginas creadas en Astro (servicios,
+landings) el texto del CTA va en el contenido de cada página, no en ACF.
+
 ### Menú: imagen de categoría → `MenuItem.megaMenu`
 
 Imagen de cada categoría en el mega menú de Servicios (como en la web actual). Ubicación:

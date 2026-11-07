@@ -65,7 +65,7 @@ const linkClass = [
     theme.surface,
   ]}
 >
-  <div class:list={['-mx-sm flex min-h-[81px] items-center justify-between border-b px-sm md:min-h-[86px]', theme.border]}>
+  <div class:list={['-mx-sm flex min-h-[calc(var(--header-height)+1px)] items-center justify-between border-b px-sm', theme.border]}>
     <a href={getRoutePath('home', locale)} aria-label={t('nav.home')}>
       <Logo color={surface === 'dark' ? 'white' : 'black'} loading="lazy" />
     </a>

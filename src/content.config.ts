@@ -51,6 +51,10 @@ const posts = defineCollection({
     tldr: z.string().optional(),
     /** ACF "FAQs" repeater; `answer` is HTML. */
     faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    /** ACF "CTA" copy for this article; missing fields use the default copy. */
+    cta: z
+      .object({ eyebrow: z.string().optional(), title: z.string().optional(), text: z.string().optional() })
+      .default({}),
     date: z.coerce.date(),
     modified: z.coerce.date(),
     author: reference('authors').optional(),

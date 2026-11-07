@@ -36,6 +36,7 @@ add_action( 'after_setup_theme', function () {
  *    Groups and GraphQL names the Astro site relies on:
  *      User.authorProfile { jobTitle linkedinUrl }   (photo = Gravatar, User.avatar)
  *      Post.postFields    { tldr faqs { tituloFaq textFaq } }
+ *      Post.cta           { eyebrow title text }
  *      MenuItem.megaMenu  { image imagePosition }
  *    Renaming them breaks the GraphQL query, and the Astro build fails.
  * ---------------------------------------------------------------------- */

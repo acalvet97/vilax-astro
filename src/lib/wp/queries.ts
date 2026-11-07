@@ -5,7 +5,7 @@
  *   - WPGraphQL                    → base schema
  *   - WPML (GraphQL enabled)       → where: { language }, language, translations
  *   - WPGraphQL Yoast SEO          → seo { … }
- *   - WPGraphQL for ACF            → authorProfile { … }, postFields { … } (field groups in wordpress/mu-plugins)
+ *   - WPGraphQL for ACF            → authorProfile, postFields, cta, megaMenu (see docs/wordpress-acf.md)
  */
 
 const SEO_FIELDS = /* GraphQL */ `
@@ -38,6 +38,7 @@ export const POSTS_QUERY = /* GraphQL */ `
           # ACF sub-field GraphQL names are tituloFaq / textFaq; aliased to question / answer.
           faqs { question: tituloFaq answer: textFaq }
         }
+        cta { eyebrow title text }
         author {
           node {
             databaseId
@@ -166,6 +167,8 @@ export type WpPost = {
     tldr: string | null;
     faqs: Array<{ question: string | null; answer: string | null }> | null;
   } | null;
+  /** ACF group "CTA" (wordpress/acf-json/group_vilax_cta.json): CTA band copy (empty → default copy). */
+  cta?: { eyebrow: string | null; title: string | null; text: string | null } | null;
   author: { node: WpAuthor | null } | null;
   seo: WpSeo;
 };

@@ -1,0 +1,61 @@
+---
+/**
+ * CTA band (Figma VILAX_2026_ArtículoBlog_dk_v3.3 → Insight_CTA, 2034:922): dark band
+ * with a dotted world map. Reused across the site; only eyebrow, title and text change:
+ *   - blog articles (and cases later): ACF group "CTA" (`cta { eyebrow title text }`)
+ *   - Astro-owned pages (services, landings): copy from each page's own content
+ * Any empty field falls back to the default copy in src/i18n/ui.ts (cta.*).
+ * The button (text and link to Contact) is the same everywhere.
+ */
+import mapDots from '../../assets/decor/map-dots.svg';
+import type { Locale } from '../../i18n/config';
+import { getRoutePath } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+
+type Props = {
+  locale: Locale;
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+  class?: string;
+};
+
+const { locale, class: className, ...copy } = Astro.props;
+const t = useTranslations(locale);
+const eyebrow = copy.eyebrow || t('cta.eyebrow');
+const title = copy.title || t('cta.title');
+const text = copy.text || t('cta.text');
+---
+
+<section aria-labelledby="cta-banner-title" class:list={['relative overflow-hidden bg-bg-inverse', className]}>
+  <!-- Decorative map: same position as in Figma (x=767 at 1920px = 193px left of the center, y=-110px) -->
+  <img
+    src={mapDots.src}
+    width={1920}
+    height={1080}
+    alt=""
+    aria-hidden="true"
+    loading="lazy"
+    decoding="async"
+    class="pointer-events-none absolute top-[-6.875rem] left-[calc(50%-12.0625rem)] h-[67.5rem] w-[120rem] max-w-none select-none"
+  />
+
+  <div class="wrapper relative flex flex-col gap-2xl py-4xl lg:flex-row lg:items-center lg:justify-between lg:py-7xl">
+    <div class="flex max-w-[49.375rem] flex-col gap-lg">
+      <div class="flex flex-col gap-sm">
+        <p class="t-label uppercase text-accent">{eyebrow}</p>
+        <h2 id="cta-banner-title" class="t-heading-lg text-text-inverse-muted lg:t-heading-xl">
+          {title}
+        </h2>
+      </div>
+      <p class="t-body-lg max-w-[45.9375rem] text-text-inverse-muted">{text}</p>
+    </div>
+
+    <a
+      href={getRoutePath('contact', locale)}
+      class="t-label inline-flex shrink-0 items-center justify-center self-start border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 hover:border-text-inverse-muted hover:bg-transparent hover:text-text-inverse-muted lg:self-auto"
+    >
+      {t('cta.button')}
+    </a>
+  </div>
+</section>

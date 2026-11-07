@@ -247,6 +247,11 @@ export function normalizePost(post: WpPost, locale: Locale) {
       readingMinutes: readingMinutes(rawContent),
       tldr: post.postFields?.tldr?.trim() || undefined,
       faqs,
+      cta: {
+        eyebrow: post.cta?.eyebrow?.trim() || undefined,
+        title: post.cta?.title?.trim() || undefined,
+        text: post.cta?.text?.trim() || undefined,
+      },
       date: post.date,
       modified: post.modified,
       author: post.author?.node ? entryId(locale, post.author.node.slug) : undefined,

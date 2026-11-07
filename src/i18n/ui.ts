@@ -5,6 +5,10 @@
 import type { Locale } from './config';
 
 const es = {
+  'cta.eyebrow': 'Cómo trabajamos',
+  'cta.title': '¿Quieres aumentar el tráfico orgánico de tu negocio?',
+  'cta.text': 'En VILAX optimizamos cada inversión con datos y pruebas constantes. Atraemos tráfico cualificado y lo convertimos en clientes. Todo con un objetivo: maximizar el retorno y escalar tu crecimiento.',
+  'cta.button': 'Cuéntanos tu proyecto',
   'nav.cta': 'Hablemos de tu proyecto',
   'nav.see': 'Ver',
   'nav.back': 'Volver',
@@ -40,6 +44,10 @@ const es = {
 type UiKey = keyof typeof es;
 
 const ca: Record<UiKey, string> = {
+  'cta.eyebrow': 'Com treballem',
+  'cta.title': 'Vols augmentar el trànsit orgànic del teu negoci?',
+  'cta.text': 'A VILAX optimitzem cada inversió amb dades i proves constants. Atraiem trànsit qualificat i el convertim en clients. Tot amb un objectiu: maximitzar el retorn i escalar el teu creixement.',
+  'cta.button': 'Explica’ns el teu projecte',
   'nav.cta': 'Parlem del teu projecte',
   'nav.see': 'Veure',
   'nav.back': 'Tornar',
@@ -73,6 +81,10 @@ const ca: Record<UiKey, string> = {
 };
 
 const en: Record<UiKey, string> = {
+  'cta.eyebrow': 'How we work',
+  'cta.title': 'Want to grow your business’s organic traffic?',
+  'cta.text': 'At VILAX we optimise every investment with data and constant testing. We attract qualified traffic and turn it into customers. All with one goal: maximising return and scaling your growth.',
+  'cta.button': 'Tell us about your project',
   'nav.cta': 'Let’s talk about your project',
   'nav.see': 'View',
   'nav.back': 'Back',

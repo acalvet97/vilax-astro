@@ -79,6 +79,11 @@ const posts: Record<Locale, WpPost[]> = {
         tldr: 'Subdominios, subdirectorios, dominios raíz… A veces parece que hay que ser ingeniero para entender cómo organizar bien una web. Y lo peor es que cada experto dice algo distinto.',
         faqs: faqsEs,
       },
+      cta: {
+        eyebrow: 'Cómo trabajamos',
+        title: '¿Quieres que tu web gane posiciones en Google?',
+        text: 'Analizamos la arquitectura de tu web y definimos la estructura que mejor posiciona tu negocio.',
+      },
       author: { node: author },
       seo: null,
     },

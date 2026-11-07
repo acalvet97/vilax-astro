@@ -4,6 +4,7 @@
  *   heading (categories, title, date · reading time, author)
  *   "En este artículo" table of contents (sticky on desktop)
  *   TL;DR (ACF) → content (WordPress editor) → FAQs (ACF)
+ *   CTA band (copy per article from the ACF "CTA" group, default copy when empty)
  *   "Insights relacionados"
  */
 import AuthorByline from '../components/blog/AuthorByline.astro';
@@ -12,6 +13,7 @@ import PostCard from '../components/blog/PostCard.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import TagList from '../components/blog/TagList.astro';
 import Prose from '../components/content/Prose.astro';
+import CtaBanner from '../components/sections/CtaBanner.astro';
 import { getRoutePath } from '../i18n/routes';
 import { formatDate, useTranslations } from '../i18n/ui';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -79,7 +81,11 @@ const faqSchema =
       {
         data.toc.length > 0 && (
           <aside class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-            <TableOfContents items={data.toc} locale={locale} class="lg:sticky lg:top-xl" />
+            <TableOfContents
+              items={data.toc}
+              locale={locale}
+              class="lg:sticky lg:top-[calc(var(--header-height)+var(--spacing-xl))] lg:max-h-[calc(100dvh-var(--header-height)-2*var(--spacing-xl))] lg:overflow-y-auto"
+            />
           </aside>
         )
       }
@@ -99,6 +105,8 @@ const faqSchema =
       </div>
     </div>
   </article>
+
+  <CtaBanner locale={locale} eyebrow={data.cta.eyebrow} title={data.cta.title} text={data.cta.text} />
 
   <!-- Related -->
   {

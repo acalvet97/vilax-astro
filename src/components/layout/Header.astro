@@ -50,7 +50,7 @@ const navLink = [
       {t('nav.skipToContent')}
     </a>
 
-    <div class="wrapper flex min-h-[80px] items-center justify-between gap-xl md:min-h-[85px] lg:min-h-[90px]">
+    <div class="wrapper flex min-h-[var(--header-height)] items-center justify-between gap-xl">
       <a href={getRoutePath('home', locale)} aria-label={t('nav.home')} class="shrink-0">
         <Logo color={surface === 'dark' ? 'white' : 'black'} />
       </a>

@@ -1,0 +1,71 @@
+{
+    "key": "group_vilax_cta",
+    "title": "CTA",
+    "fields": [
+        {
+            "key": "field_vilax_cta_eyebrow",
+            "label": "Antetítulo",
+            "name": "eyebrow",
+            "type": "text",
+            "instructions": "Texto corto en amarillo encima del título (p. ej. «Cómo trabajamos»). Si se deja vacío, se usa el texto genérico.",
+            "required": 0,
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "eyebrow",
+            "graphql_non_null": 0,
+            "wpml_cf_preferences": 2
+        },
+        {
+            "key": "field_vilax_cta_title",
+            "label": "Título",
+            "name": "title",
+            "type": "text",
+            "instructions": "Título de la franja CTA (h2). Si se deja vacío, se usa el texto genérico.",
+            "required": 0,
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "title",
+            "graphql_non_null": 0,
+            "wpml_cf_preferences": 2
+        },
+        {
+            "key": "field_vilax_cta_text",
+            "label": "Texto",
+            "name": "text",
+            "type": "textarea",
+            "instructions": "Párrafo bajo el título. Si se deja vacío, se usa el texto genérico.",
+            "required": 0,
+            "rows": 3,
+            "new_lines": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "text",
+            "graphql_non_null": 0,
+            "wpml_cf_preferences": 2
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 10,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Franja CTA (fondo negro con mapa) al final del contenido. El botón «Cuéntanos tu proyecto» es fijo. Astro: cta { eyebrow title text }.",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "cta",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "Post"
+    ]
+}
