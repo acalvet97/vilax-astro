@@ -1,0 +1,130 @@
+---
+/**
+ * Mobile/tablet menu (≤1024px), as in production: a panel from the left
+ * (max 400px) with level navigation — main menu → Servicios → category →
+ * services — a "Volver" button, the language switcher and a full-width CTA.
+ * Every menu item with children opens a new level; items with a URL also get
+ * a "Ver <item>" link (in accent color) at the end of their level.
+ * Behavior (open/close, levels, scroll lock) lives in src/scripts/header.ts.
+ */
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '../../i18n/config';
+import { getRoutePath, type Alternate } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+import type { MenuItem } from '../../lib/navigation';
+import MenuLink from '../navigation/MenuLink.astro';
+import type { HeaderSurface, HeaderTheme } from './header-theme';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import Logo from './Logo.astro';
+
+type Props = {
+  id: string;
+  items: MenuItem[];
+  locale: Locale;
+  alternates?: Alternate[];
+  surface: HeaderSurface;
+  theme: HeaderTheme;
+  currentPath: string;
+};
+
+const { id, items, locale, alternates, surface, theme, currentPath } = Astro.props;
+const t = useTranslations(locale);
+
+// One panel per item that has children (recursively), plus the main one.
+type Panel = { key: string; title?: string; parent?: MenuItem; items: MenuItem[] };
+const panels: Panel[] = [{ key: 'main', items }];
+const keys = new Map<MenuItem, string>();
+const collect = (list: MenuItem[]) => {
+  for (const item of list) {
+    if (item.children.length === 0) continue;
+    const key = `p${panels.length}`;
+    keys.set(item, key);
+    panels.push({ key, title: item.label, parent: item, items: item.children });
+    collect(item.children);
+  }
+};
+collect(items);
+
+const linkClass = [
+  't-label mb-sm flex w-full items-center justify-between gap-sm border-b py-2xs text-left uppercase transition-colors duration-200',
+  theme.border,
+  'hover:text-text-subtle aria-[current=page]:text-text-subtle',
+];
+---
+
+<div
+  id={id}
+  role="dialog"
+  aria-modal="true"
+  aria-label={t('nav.main')}
+  tabindex="-1"
+  hidden
+  data-drawer
+  class:list={[
+    'fixed inset-y-0 left-0 z-[60] flex w-full max-w-[400px] flex-col overflow-hidden px-sm pb-lg outline-none lg:hidden',
+    theme.surface,
+  ]}
+>
+  <div class:list={['-mx-sm flex min-h-[81px] items-center justify-between border-b px-sm md:min-h-[86px]', theme.border]}>
+    <a href={getRoutePath('home', locale)} aria-label={t('nav.home')}>
+      <Logo color={surface === 'dark' ? 'white' : 'black'} loading="lazy" />
+    </a>
+    <button type="button" data-drawer-close aria-label={t('nav.closeMenu')} class="relative flex size-[44px] items-center justify-end">
+      <span
+        aria-hidden="true"
+        class="relative block h-[2px] w-lg before:absolute before:top-0 before:right-0 before:h-[2px] before:w-lg before:rotate-45 before:bg-current after:absolute after:top-0 after:right-0 after:h-[2px] after:w-lg after:-rotate-45 after:bg-current"
+      ></span>
+    </button>
+  </div>
+
+  <div class="mt-xl mb-[2.5rem] flex min-h-[3.5rem] items-center justify-between gap-sm">
+    <button type="button" data-drawer-back hidden class="t-label inline-flex items-center gap-3xs uppercase">
+      <Icon name="ri:arrow-left-s-line" class="size-md" aria-hidden="true" />
+      {t('nav.back')}
+    </button>
+    <LanguageSwitcher locale={locale} alternates={alternates} surface={surface} class="ml-auto" />
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-y-auto">
+    {
+      panels.map((panel) => (
+        <div data-panel={panel.key} hidden={panel.key !== 'main'} class="flex flex-col">
+          {panel.title && <p class="t-caption mb-sm uppercase text-text-subtle">{panel.title}</p>}
+          {panel.items.map((item) =>
+            item.children.length > 0 ? (
+              <button type="button" data-target={keys.get(item)} class:list={linkClass}>
+                <span>{item.label}</span>
+                <Icon name="ri:arrow-right-s-line" class="size-sm" aria-hidden="true" />
+              </button>
+            ) : (
+              <MenuLink item={item} currentPath={currentPath} class:list={linkClass}>
+                <span>{item.label}</span>
+              </MenuLink>
+            ),
+          )}
+          {panel.parent?.href && (
+            <MenuLink
+              item={{ ...panel.parent, children: [] }}
+              currentPath={currentPath}
+              class:list={[...linkClass, 'text-accent']}
+            >
+              <span>
+                {t('nav.see')} {panel.parent.label}
+              </span>
+              <Icon name="ri:arrow-right-s-line" class="size-sm" aria-hidden="true" />
+            </MenuLink>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="flex flex-col pt-sm">
+    <a
+      href={getRoutePath('contact', locale)}
+      class="t-label flex items-center justify-center border border-accent bg-accent px-xl py-sm text-center uppercase text-text-on-accent"
+    >
+      {t('nav.cta')}
+    </a>
+  </div>
+</div>

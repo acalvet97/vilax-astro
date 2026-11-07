@@ -15,6 +15,16 @@ type MockItem = { label: string; url?: string; children?: MockItem[] };
 
 const PODCAST = 'https://vilaxpodcast.com/';
 
+/** Mega-menu images of the 5 service categories, in order (same as production). */
+const UPLOADS = 'https://www.vilax.es/wp-content/uploads';
+const MEGA_IMAGES = [
+  { src: `${UPLOADS}/2026/02/re-read-768x1018.webp`, width: 768, height: 1018, position: '50% 85%' },
+  { src: `${UPLOADS}/2026/02/eas-barcelona-768x1069.webp`, width: 768, height: 1069, position: '50% 100%' },
+  { src: `${UPLOADS}/2026/02/brand-experience-banner.webp`, width: 709, height: 665, position: '70% 50%' },
+  { src: `${UPLOADS}/2026/02/desarollo-web-VILAX-768x960.webp`, width: 768, height: 960, position: '50% 50%' },
+  { src: `${UPLOADS}/2026/05/ribera-manero-staff-768x512.webp`, width: 768, height: 512, position: '60% 50%' },
+];
+
 const primary: Record<Locale, MockItem[]> = {
   es: [
     {
@@ -251,14 +261,29 @@ const mocks: Record<MenuLocation, Record<Locale, MockItem[]>> = { primary, foote
 function toWpItems(tree: MockItem[], prefix: string): WpMenuItem[] {
   const out: WpMenuItem[] = [];
   let order = 0;
-  const walk = (items: MockItem[], parentId: string | null) => {
-    for (const item of items) {
+  const walk = (items: MockItem[], parentId: string | null, depth: number) => {
+    items.forEach((item, index) => {
       const id = `${prefix}-${++order}`;
-      out.push({ id, parentId, order, label: item.label, url: item.url ?? '#', target: null });
-      if (item.children) walk(item.children, id);
-    }
+      // Second-level items with children are service categories: give them their image.
+      const img = depth === 1 && item.children?.length ? MEGA_IMAGES[index] : undefined;
+      out.push({
+        id,
+        parentId,
+        order,
+        label: item.label,
+        url: item.url ?? '#',
+        target: null,
+        megaMenu: img
+          ? {
+              image: { node: { sourceUrl: img.src, altText: '', mediaDetails: { width: img.width, height: img.height } } },
+              imagePosition: img.position,
+            }
+          : null,
+      });
+      if (item.children) walk(item.children, id, depth + 1);
+    });
   };
-  walk(tree, null);
+  walk(tree, null, 0);
   return out;
 }
 

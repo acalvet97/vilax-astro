@@ -64,13 +64,11 @@ const headingClass = 't-caption lg:t-label uppercase text-text-subtle';
 ---
 
 <footer class="bg-bg-inverse text-text-inverse">
-  <div
-    class="px-page flex flex-col gap-3xl py-3xl lg:grid lg:grid-cols-4 lg:gap-md lg:py-6xl"
-  >
+  <div class="wrapper flex flex-col gap-3xl py-3xl lg:grid lg:grid-cols-4 lg:gap-md lg:py-6xl">
     <!-- Left column: brand, contact, social, Ask AI -->
     <div class="flex flex-col gap-3xl lg:justify-between">
       <div class="flex flex-col items-start gap-xl">
-        <Logo color="white" size="footer" />
+        <Logo color="white" loading="lazy" />
 
         <address class="t-body-sm flex flex-col gap-sm not-italic">
           <p>{site.address[0]}<br />{site.address[1]}</p>
@@ -145,21 +143,21 @@ const headingClass = 't-caption lg:t-label uppercase text-text-subtle';
     </nav>
   </div>
 
-  <!-- Bottom bar -->
-  <div
-    class="px-page flex flex-col gap-xl border-t border-border-inverse py-lg lg:flex-row-reverse lg:items-center lg:justify-between"
-  >
-    <nav aria-label={t('footer.legal')}>
-      <ul class="t-caption lg:t-body-sm flex flex-wrap gap-sm lg:gap-xl">
-        {
-          legal.map((item) => (
-            <li>
-              <MenuLink item={item} currentPath={currentPath} class={linkClass} />
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-    <p class="t-caption lg:t-body-sm text-text-subtle">{year} © {site.name}. {t('footer.rights')}</p>
+  <!-- Bottom bar (border spans the full width) -->
+  <div class="border-t border-border-inverse">
+    <div class="wrapper flex flex-col gap-xl py-lg lg:flex-row-reverse lg:items-center lg:justify-between">
+      <nav aria-label={t('footer.legal')}>
+        <ul class="t-caption lg:t-body-sm flex flex-wrap gap-sm lg:gap-xl">
+          {
+            legal.map((item) => (
+              <li>
+                <MenuLink item={item} currentPath={currentPath} class={linkClass} />
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <p class="t-caption lg:t-body-sm text-text-subtle">{year} © {site.name}. {t('footer.rights')}</p>
+    </div>
   </div>
 </footer>

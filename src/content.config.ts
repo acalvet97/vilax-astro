@@ -98,6 +98,9 @@ const menuItem = z.object({
   href: z.string().nullable(),
   external: z.boolean(),
   newTab: z.boolean(),
+  image: z
+    .object({ src: z.string(), alt: z.string(), width: z.number(), height: z.number(), position: z.string() })
+    .optional(),
   get children() {
     return z.array(menuItem);
   },

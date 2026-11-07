@@ -5,6 +5,9 @@
 import type { Locale } from './config';
 
 const es = {
+  'nav.cta': 'Hablemos de tu proyecto',
+  'nav.see': 'Ver',
+  'nav.back': 'Volver',
   'blog.minutesRead': 'minutos de lectura',
   'blog.publishedBy': 'Publicado por',
   'blog.inThisArticle': 'En este artículo',
@@ -37,6 +40,9 @@ const es = {
 type UiKey = keyof typeof es;
 
 const ca: Record<UiKey, string> = {
+  'nav.cta': 'Parlem del teu projecte',
+  'nav.see': 'Veure',
+  'nav.back': 'Tornar',
   'blog.minutesRead': 'minuts de lectura',
   'blog.publishedBy': 'Publicat per',
   'blog.inThisArticle': 'En aquest article',
@@ -67,6 +73,9 @@ const ca: Record<UiKey, string> = {
 };
 
 const en: Record<UiKey, string> = {
+  'nav.cta': 'Let’s talk about your project',
+  'nav.see': 'View',
+  'nav.back': 'Back',
   'blog.minutesRead': 'min read',
   'blog.publishedBy': 'Published by',
   'blog.inThisArticle': 'In this article',

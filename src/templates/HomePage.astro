@@ -34,7 +34,7 @@ const seo: Record<Locale, { title: string; description: string; heading: string 
 ---
 
 <BaseLayout locale={locale} title={seo[locale].title} description={seo[locale].description} alternates={getRouteAlternates('home')}>
-  <section class="px-page py-6xl">
+  <section class="wrapper py-6xl">
     <h1 class="t-display-sm lg:t-display-xl max-w-[16ch]">{seo[locale].heading}</h1>
     <p class="t-lead mt-xl max-w-[48ch] text-text-muted">{seo[locale].description}</p>
   </section>

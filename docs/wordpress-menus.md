@@ -35,6 +35,21 @@ Hay **3 menús**, cada uno en **3 idiomas** (9 menús en total):
 - Una nueva categoría dentro de «Servicios» (con sus servicios) → aparece como columna en el desplegable de Servicios y en el footer.
 - Si una URL interna no existe en la web, la compilación avisa (antes del lanzamiento, fallará).
 
+### Imágenes del mega menú
+
+Cada categoría de «Servicios» (Estrategia & Growth, Performance Marketing…) lleva una imagen en el mega
+menú. Se pone en *Apariencia → Menús*, desplegando el elemento de la categoría: campos **Imagen** y
+**Encuadre** (grupo ACF «Menú: imagen de categoría», ver `docs/wordpress-acf.md`). Hay que ponerla en el
+menú de cada idioma. Imágenes y encuadres actuales de producción:
+
+| Categoría | Imagen (biblioteca de producción) | Encuadre |
+|---|---|---|
+| Estrategia & Growth | `re-read.webp` | `50% 85%` |
+| Performance Marketing | `eas-barcelona.webp` | `50% 100%` |
+| Brand Experience | `brand-experience-banner.webp` | `70% 50%` |
+| Desarrollo Web | `desarollo-web-VILAX.webp` | `50% 50%` |
+| Creative Media | `ribera-manero-staff.webp` | `60% 50%` |
+
 ### Lo que NO se gestiona desde menús
 
 El logo, el selector de idioma, el botón amarillo **Contacto**, la dirección, el email, el teléfono, las redes sociales y los botones «Pregúntale a la IA» son fijos en Astro (`src/config/site.ts` y `src/i18n/ui.ts`).

@@ -46,3 +46,17 @@ Grupo «Artículos Insights». Ubicación: *Tipo de contenido = Entrada*.
 | ↳ Respuesta | — | Editor WYSIWYG | `textFaq` |
 
 Ambos son opcionales: si están vacíos, el bloque no aparece en el artículo.
+
+### Menú: imagen de categoría → `MenuItem.megaMenu`
+
+Imagen de cada categoría en el mega menú de Servicios (como en la web actual). Ubicación:
+*Elemento de menú = Header: navegación principal*. Archivo para importar:
+`wordpress/acf-json/group_vilax_menu_item_image.json`.
+
+| Campo | Nombre | Tipo | Nombre GraphQL |
+|---|---|---|---|
+| Imagen | `image` | Imagen (formato: array) | `image` |
+| Encuadre | `image_position` | Texto (por defecto `50% 50%`) | `imagePosition` |
+
+Solo se rellena en las 5 categorías (segundo nivel de «Servicios»). La imagen se muestra en vertical
+(4:5) y el encuadre indica qué parte se ve al recortarla («horizontal vertical», p. ej. `50% 85%`).

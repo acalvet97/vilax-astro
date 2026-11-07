@@ -1,0 +1,59 @@
+{
+    "key": "group_vilax_menu_item_image",
+    "title": "Menú: imagen de categoría (mega menú)",
+    "fields": [
+        {
+            "key": "field_vilax_menu_item_image",
+            "label": "Imagen",
+            "name": "image",
+            "type": "image",
+            "instructions": "Solo para las categorías de «Servicios» (segundo nivel). Se muestra en vertical (4:5) junto a sus servicios en el mega menú.",
+            "required": 0,
+            "return_format": "array",
+            "library": "all",
+            "preview_size": "medium",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "image",
+            "graphql_non_null": 0
+        },
+        {
+            "key": "field_vilax_menu_item_image_position",
+            "label": "Encuadre",
+            "name": "image_position",
+            "type": "text",
+            "instructions": "Qué parte de la imagen se ve al recortarla: posición horizontal y vertical. Ej.: «50% 50%» (centro), «50% 100%» (abajo), «70% 50%» (a la derecha).",
+            "required": 0,
+            "default_value": "50% 50%",
+            "placeholder": "50% 50%",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "imagePosition",
+            "graphql_non_null": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "nav_menu_item",
+                "operator": "==",
+                "value": "location/primary"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Imagen y encuadre de cada categoría en el mega menú de Servicios (Astro: MenuItem.megaMenu).",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "megaMenu",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "MenuItem"
+    ]
+}

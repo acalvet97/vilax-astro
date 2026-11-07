@@ -15,7 +15,8 @@ type Props = SeoProps & {
   headerSurface?: 'light' | 'dark';
 };
 
-const { headerSurface = 'light', ...seo } = Astro.props;
+// Header is dark by default (as in production); blog templates pass 'light'.
+const { headerSurface = 'dark', ...seo } = Astro.props;
 ---
 
 <!doctype html>

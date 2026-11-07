@@ -29,8 +29,9 @@ const pills = categories.map((c) => ({ label: c.data.name, href: c.data.path, cu
   description={category?.data.seo.description}
   noindex={category?.data.seo.noindex}
   alternates={alternates}
+  headerSurface="light"
 >
-  <div class="px-page flex flex-col gap-4xl pt-4xl pb-6xl lg:pt-6xl">
+  <div class="wrapper flex flex-col gap-4xl pt-4xl pb-6xl lg:pt-6xl">
     <header class="flex flex-col gap-2xl">
       <h1 class="t-display-sm lg:t-display-lg">{heading}</h1>
       <TagList items={pills} uppercase label={t('blog.categories')} />

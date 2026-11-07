@@ -53,12 +53,13 @@ const faqSchema =
   ogType="article"
   jsonLd={data.seo.jsonLd}
   alternates={alternates}
+  headerSurface="light"
 >
   {faqSchema && <script is:inline slot="head" type="application/ld+json" set:html={faqSchema} />}
 
-  <article>
+  <article class="wrapper">
     <div
-      class="px-page grid gap-3xl border-b border-border pt-4xl pb-6xl lg:grid-cols-[minmax(0,925fr)_minmax(0,520fr)] lg:gap-x-[9.6875%] lg:pt-6xl"
+      class="grid gap-3xl border-b border-border pt-4xl pb-6xl lg:grid-cols-[minmax(0,925fr)_minmax(0,520fr)] lg:gap-x-[9.6875%] lg:pt-6xl"
     >
       <!-- Heading -->
       <header class="flex flex-col gap-4xl border-b border-border pb-3xl lg:col-start-1 lg:gap-6xl">
@@ -102,7 +103,7 @@ const faqSchema =
   <!-- Related -->
   {
     relatedCards.length > 0 && (
-      <section aria-labelledby="related-title" class="px-page flex flex-col gap-4xl py-4xl lg:gap-6xl lg:py-6xl">
+      <section aria-labelledby="related-title" class="wrapper flex flex-col gap-4xl py-4xl lg:gap-6xl lg:py-6xl">
         <div class="flex flex-wrap items-start justify-between gap-lg">
           <h2 id="related-title" class="t-heading-lg lg:t-heading-xl">
             {t('blog.related')}

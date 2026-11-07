@@ -1,0 +1,602 @@
+/**
+ * Header de VILAX.
+ *
+ * Colores y medidas en variables CSS sobre .vx-header; el modo claro (.vx-header--light)
+ * solo redefine variables. El JS solo cambia atributos (hidden, aria-*) y la clase vx-lock.
+ */
+
+/* ---------- Posición: el header se queda fijo arriba al hacer scroll ---------- */
+.vx-site-header {
+	position: sticky;
+	top: 0;
+	z-index: 1000
+}
+
+.admin-bar .vx-site-header {
+	top: 32px
+}
+
+@media (max-width:782px) {
+	.admin-bar .vx-site-header {
+		top: 46px
+	}
+}
+
+@media (max-width:600px) {
+	.admin-bar .vx-site-header {
+		top: 0
+	}
+}
+
+/* ---------- Bloqueo del scroll de la página con el menú móvil abierto ---------- */
+html.vx-lock {
+	overflow: hidden
+}
+
+/* ---------- Variables (modo oscuro por defecto) ---------- */
+.vx-header {
+	--vx-bg: #040404;
+	--vx-fg: #eaeaea;
+	--vx-muted: #848484;
+	--vx-hover: #848484;
+	--vx-border: rgba(196, 196, 196, .2);
+	--vx-accent: #ffe843;
+	--vx-on-accent: #181818;
+	--vx-lang-bg: #2c2c2c;
+	--vx-lang-on: #040404;
+	--vx-fs-ui: clamp(.875rem, .839rem + .161vw, 1rem);
+	--vx-max: 1600px;
+	--vx-gutter: 4rem;
+	--vx-bar-h: 90px;
+	position: relative;
+	background: var(--vx-bg);
+	color: var(--vx-fg);
+	border-bottom: 1px solid var(--vx-border);
+	font-family: "Geist", system-ui, sans-serif;
+	font-weight: 400
+}
+
+/* ---------- Modo claro: solo cambia variables ---------- */
+.vx-header--light {
+	--vx-bg: #fff;
+	--vx-fg: #181818;
+	--vx-muted: #848484;
+	--vx-hover: #5a5a5a;
+	--vx-border: #d7d7d7;
+	--vx-lang-bg: #f3f3f3;
+	--vx-lang-on: #fff
+}
+
+/* ---------- Reseteo dentro del header (anula estilos de Hello y del kit de Elementor) ---------- */
+.vx-header *,
+.vx-header *::before,
+.vx-header *::after {
+	box-sizing: border-box
+}
+
+.vx-header a {
+	color: inherit;
+	text-decoration: none
+}
+
+html .vx-header button {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	padding: 0;
+	margin: 0;
+	min-height: 0;
+	cursor: pointer;
+	text-transform: inherit;
+	letter-spacing: inherit;
+	text-align: left;
+	text-decoration: none
+}
+
+html .vx-header button:hover,
+html .vx-header button:focus,
+html .vx-header button:active {
+	background: none;
+	color: inherit;
+	border: 0;
+	box-shadow: none
+}
+
+html .vx-header button:focus:not(:focus-visible) {
+	outline: 0
+}
+
+.vx-header :focus-visible {
+	outline: 2px solid var(--vx-accent);
+	outline-offset: 3px
+}
+
+.vx-header svg {
+	flex: none
+}
+
+/* ---------- Barra y logo ---------- */
+.vx-header__bar {
+	max-width: calc(var(--vx-max) + 2 * var(--vx-gutter));
+	margin: 0 auto;
+	min-height: var(--vx-bar-h);
+	padding: 0 var(--vx-gutter);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 2rem
+}
+
+.vx-header__logo {
+	display: block;
+	flex: none;
+	width: 135px
+}
+
+.vx-header__logo img {
+	display: block;
+	width: 100%;
+	height: auto
+}
+
+/* ---------- Navegación de escritorio ---------- */
+.vx-nav__list {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	margin: 0;
+	padding: 0;
+	list-style: none
+}
+
+.vx-header .vx-nav__link {
+	display: inline-flex;
+	align-items: center;
+	gap: .4rem;
+	font-size: var(--vx-fs-ui);
+	line-height: 1.5;
+	letter-spacing: -.02rem;
+	text-transform: uppercase;
+	transition: color .2s
+}
+
+.vx-header .vx-nav__link:hover,
+.vx-header .vx-nav__toggle[aria-expanded="true"] {
+	color: var(--vx-hover)
+}
+
+.vx-nav__link svg {
+	width: 1rem;
+	height: 1rem;
+	transition: transform .2s
+}
+
+.vx-nav__toggle[aria-expanded="true"] svg {
+	transform: rotate(180deg)
+}
+
+/* ---------- Acciones: selector de idioma y botón de contacto ---------- */
+.vx-header__actions {
+	display: flex;
+	align-items: stretch;
+	gap: 1rem
+}
+
+.vx-lang {
+	display: flex;
+	gap: 2px;
+	margin: 0;
+	padding: 4px;
+	min-height: calc(2rem + 1.2 * var(--vx-fs-ui) + 2px);
+	list-style: none;
+	background: var(--vx-lang-bg)
+}
+
+.vx-lang li {
+	display: flex
+}
+
+.vx-lang a {
+	display: flex;
+	align-items: center;
+	padding: .5rem .75rem;
+	font-size: var(--vx-fs-ui);
+	line-height: 1.2;
+	text-transform: uppercase;
+	transition: background-color .2s
+}
+
+.vx-header .vx-lang a:hover {
+	background: var(--vx-lang-on);
+	color: var(--vx-fg)
+}
+
+.vx-lang a[aria-current="true"] {
+	background: var(--vx-lang-on)
+}
+
+.vx-header .vx-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem 2rem;
+	background: var(--vx-accent);
+	color: var(--vx-on-accent);
+	border: 1px solid var(--vx-accent);
+	font-size: var(--vx-fs-ui);
+	line-height: 1.2;
+	text-transform: uppercase;
+	transition: background-color .3s, color .3s, border-color .3s
+}
+
+.vx-header .vx-btn:hover {
+	background: transparent;
+	color: var(--vx-fg);
+	border-color: var(--vx-fg)
+}
+
+/* ---------- Botones de abrir y cerrar el menú móvil ---------- */
+.vx-header .vx-burger,
+.vx-header .vx-drawer__close {
+	display: none;
+	position: relative;
+	width: 44px;
+	height: 44px;
+	align-items: center;
+	justify-content: flex-end
+}
+
+.vx-burger span,
+.vx-burger span::before,
+.vx-burger span::after {
+	display: block;
+	width: 24px;
+	height: 2px;
+	background: currentColor;
+	position: relative
+}
+
+.vx-burger span::before,
+.vx-burger span::after {
+	content: "";
+	position: absolute;
+	left: 0
+}
+
+.vx-burger span::before {
+	top: -7px
+}
+
+.vx-burger span::after {
+	top: 7px
+}
+
+.vx-drawer__close span::before,
+.vx-drawer__close span::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 21px;
+	width: 24px;
+	height: 2px;
+	background: currentColor
+}
+
+.vx-drawer__close span::before {
+	transform: rotate(45deg)
+}
+
+.vx-drawer__close span::after {
+	transform: rotate(-45deg)
+}
+
+/* ---------- Mega menú de Servicios ---------- */
+.vx-mega {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	background: var(--vx-bg);
+	border-top: 1px solid var(--vx-border);
+	border-bottom: 1px solid var(--vx-border)
+}
+
+.vx-mega[hidden],
+.vx-mega__panel[hidden],
+.vx-drawer[hidden],
+.vx-drawer__back[hidden] {
+	display: none
+}
+
+.vx-mega__inner {
+	max-width: calc(var(--vx-max) + 2 * var(--vx-gutter));
+	margin: 0 auto;
+	padding: 4rem var(--vx-gutter);
+	display: grid;
+	grid-template-columns: 25% 1fr;
+	gap: 2rem
+}
+
+.vx-mega__tabs {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 3rem;
+	padding: .5rem 0 0 1rem
+}
+
+.vx-header .vx-mega__tab {
+	position: relative;
+	font-size: clamp(1.25rem, 1.075rem + .774vw, 2rem);
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	text-transform: none;
+	color: var(--vx-muted);
+	transition: color .2s
+}
+
+.vx-header .vx-mega__tab[aria-selected="true"],
+.vx-header .vx-mega__tab:hover {
+	color: var(--vx-fg)
+}
+
+.vx-mega__tab[aria-selected="true"]::before {
+	content: "";
+	position: absolute;
+	left: -1rem;
+	top: 50%;
+	width: .4rem;
+	height: .6rem;
+	background: var(--vx-accent);
+	clip-path: polygon(0 0, 100% 50%, 0 100%);
+	transform: translateY(-50%)
+}
+
+.vx-mega__panel {
+	display: grid;
+	grid-template-columns: 1fr minmax(0, 24rem);
+	gap: 4rem;
+	align-items: start
+}
+
+.vx-mega__links ul {
+	margin: 0 0 2.5rem;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem
+}
+
+.vx-mega__links a {
+	font-size: clamp(1.188rem, 1.097rem + .403vw, 1.5rem);
+	line-height: 1.32;
+	letter-spacing: -.03rem;
+	color: var(--vx-muted);
+	transition: color .2s
+}
+
+.vx-mega__links a:hover,
+.vx-mega__links a[aria-current="page"] {
+	color: var(--vx-fg)
+}
+
+.vx-header .vx-mega__more {
+	display: inline-flex;
+	align-items: center;
+	gap: .25rem;
+	font-size: var(--vx-fs-ui);
+	line-height: 1.5;
+	letter-spacing: -.02rem;
+	text-transform: uppercase;
+	color: var(--vx-fg);
+	transition: color .2s
+}
+
+.vx-header .vx-mega__more:hover {
+	color: var(--vx-hover)
+}
+
+.vx-mega__more svg {
+	width: 1.25rem;
+	height: 1.25rem
+}
+
+.vx-mega__img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4/5;
+	object-fit: cover
+}
+
+/* ---------- Menú móvil ---------- */
+.vx-drawer {
+	--vx-pad: 1rem;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: min(400px, 100%);
+	z-index: 1001;
+	display: flex;
+	flex-direction: column;
+	background: var(--vx-bg);
+	color: var(--vx-fg);
+	padding: 0 var(--vx-pad) 1.5rem;
+	overflow: hidden;
+	outline: 0
+}
+
+.admin-bar .vx-drawer {
+	top: 32px
+}
+
+@media (max-width:782px) {
+	.admin-bar .vx-drawer {
+		top: 46px
+	}
+}
+
+.vx-drawer__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: calc(var(--vx-bar-h) + 1px);
+	margin: 0 calc(-1 * var(--vx-pad));
+	padding: 0 var(--vx-pad);
+	border-bottom: 1px solid var(--vx-border)
+}
+
+.vx-drawer__top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	min-height: 3.5rem;
+	margin: 2rem 0 2.5rem
+}
+
+.vx-drawer__top .vx-lang {
+	margin-left: auto
+}
+
+.vx-header .vx-drawer__back {
+	display: inline-flex;
+	align-items: center;
+	gap: .25rem;
+	font-size: var(--vx-fs-ui);
+	text-transform: uppercase
+}
+
+.vx-header .vx-drawer__back[hidden] {
+	display: none
+}
+
+.vx-drawer__back svg {
+	width: 1.25rem;
+	height: 1.25rem
+}
+
+.vx-drawer__body {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch
+}
+
+.vx-panel {
+	display: none;
+	flex-direction: column
+}
+
+.vx-panel.is-active {
+	display: flex
+}
+
+.vx-panel__title {
+	margin: 0 0 1rem;
+	font-size: clamp(.813rem, .789rem + .081vw, .875rem);
+	text-transform: uppercase;
+	color: var(--vx-muted)
+}
+
+.vx-header .vx-panel__link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	width: 100%;
+	margin-bottom: 1rem;
+	padding: .5rem 0;
+	border-bottom: 1px solid var(--vx-border);
+	font-size: var(--vx-fs-ui);
+	line-height: 1.5;
+	text-transform: uppercase;
+	transition: color .2s
+}
+
+html .vx-header .vx-panel__link:hover,
+html .vx-header .vx-panel__link:focus,
+html .vx-header .vx-panel__link:active,
+.vx-header .vx-panel__link[aria-current="page"] {
+	color: var(--vx-muted);
+	border: 0;
+	border-bottom: 1px solid var(--vx-border)
+}
+
+.vx-panel__link--hub {
+	color: var(--vx-accent)
+}
+
+.vx-panel__link svg {
+	width: 1rem;
+	height: 1rem
+}
+
+.vx-drawer__foot {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding-top: 1rem
+}
+
+/* ---------- Responsive ---------- */
+@media (min-width:1025px) {
+	.vx-drawer {
+		display: none !important
+	}
+}
+
+@media (max-width:1440px) and (min-width:1025px) {
+	.vx-header .vx-mega__tab {
+		font-size: 1.3rem
+	}
+
+	.vx-mega__links a {
+		font-size: 1.1rem
+	}
+}
+
+@media (max-width:1024px) {
+	.vx-header {
+		--vx-gutter: 2rem;
+		--vx-bar-h: 85px
+	}
+
+	.vx-header__logo {
+		width: 124px
+	}
+
+	.vx-nav,
+	.vx-header__actions .vx-lang,
+	.vx-header__actions .vx-btn {
+		display: none
+	}
+
+	.vx-header .vx-burger,
+	.vx-header .vx-drawer__close {
+		display: inline-flex
+	}
+}
+
+@media (max-width:767px) {
+	.vx-header {
+		--vx-gutter: 1rem;
+		--vx-bar-h: 80px
+	}
+
+	.vx-header__logo {
+		width: 108px
+	}
+}
+
+/* ---------- Accesibilidad: movimiento reducido ---------- */
+@media (prefers-reduced-motion:reduce) {
+	.vx-header * {
+		transition: none !important
+	}
+}

@@ -134,6 +134,8 @@ export type MenuItem = {
   href: string | null;
   external: boolean;
   newTab: boolean;
+  /** Mega-menu image of a service category (ACF on the menu item). */
+  image?: { src: string; alt: string; width: number; height: number; position: string };
   children: MenuItem[];
 };
 
@@ -175,6 +177,22 @@ export function normalizeMenuUrl(raw: string | null): { href: string | null; ext
   return { href: withTrailingSlash(parsed.pathname) + parsed.search + parsed.hash, external: false };
 }
 
+function normalizeMenuImage(item: WpMenuItem): MenuItem['image'] {
+  const node = item.megaMenu?.image?.node;
+  const width = node?.mediaDetails?.width;
+  const height = node?.mediaDetails?.height;
+  if (!node?.sourceUrl || !width || !height) return undefined;
+  const position = item.megaMenu?.imagePosition?.trim();
+  return {
+    src: node.sourceUrl,
+    alt: node.altText ?? '',
+    width,
+    height,
+    // Only accept CSS-like positions ("50% 85%", "center top"…).
+    position: position && /^[\w\s.%-]+$/.test(position) ? position : '50% 50%',
+  };
+}
+
 /** Rebuilds the menu hierarchy from WPGraphQL's flat list (parentId + order). */
 export function buildMenuTree(items: WpMenuItem[]): MenuItem[] {
   const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -187,6 +205,7 @@ export function buildMenuTree(items: WpMenuItem[]): MenuItem[] {
       href,
       external,
       newTab: item.target === '_blank',
+      image: normalizeMenuImage(item),
       children: [],
     });
   }

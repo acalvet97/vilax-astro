@@ -1,0 +1,101 @@
+---
+/**
+ * Services mega menu (desktop), as in production (wordpress/reference/production-header):
+ * vertical tabs with the service categories on the left; for the selected
+ * category, its services, a "Ver <categoría>" link and the category image
+ * (ACF on the menu item, with its crop position).
+ * Behavior (hover/click, tabs, keyboard) lives in src/scripts/header.ts.
+ */
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import type { MenuItem } from '../../lib/navigation';
+import MenuLink from '../navigation/MenuLink.astro';
+import type { HeaderTheme } from './header-theme';
+
+type Props = { id: string; groups: MenuItem[]; locale: Locale; theme: HeaderTheme; currentPath: string };
+
+const { id, groups, locale, theme, currentPath } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<div id={id} hidden class:list={['absolute inset-x-0 top-full border-y', theme.surface, theme.border]}>
+  <div class="wrapper grid grid-cols-[25%_1fr] gap-xl py-3xl">
+    <div role="tablist" aria-orientation="vertical" class="flex flex-col items-start gap-2xl pt-2xs pl-sm">
+      {
+        groups.map((group, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`${id}-tab-${i}`}
+            aria-controls={`${id}-panel-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class:list={[
+              't-heading-md relative text-left text-text-subtle transition-colors duration-200',
+              theme.hoverFg,
+              theme.selectedFg,
+              // Yellow triangle marker on the selected tab
+              'aria-selected:before:absolute aria-selected:before:top-1/2 aria-selected:before:-left-sm aria-selected:before:h-[0.6rem] aria-selected:before:w-[0.4rem] aria-selected:before:-translate-y-1/2 aria-selected:before:bg-accent aria-selected:before:[clip-path:polygon(0_0,100%_50%,0_100%)]',
+            ]}
+          >
+            {group.label}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      groups.map((group, i) => (
+        <div
+          role="tabpanel"
+          id={`${id}-panel-${i}`}
+          aria-labelledby={`${id}-tab-${i}`}
+          hidden={i !== 0}
+          class="grid grid-cols-[1fr_minmax(0,24rem)] items-start gap-3xl"
+        >
+          <div>
+            <ul class="mb-[2.5rem] flex flex-col gap-lg">
+              {group.children.map((link) => (
+                <li>
+                  <MenuLink
+                    item={link}
+                    currentPath={currentPath}
+                    class:list={[
+                      't-heading-sm text-text-subtle transition-colors duration-200',
+                      theme.hoverFg,
+                      theme.currentFg,
+                    ]}
+                  />
+                </li>
+              ))}
+            </ul>
+            {group.href && (
+              <a
+                href={group.href}
+                class:list={['t-label inline-flex items-center gap-3xs uppercase transition-colors duration-200', theme.hoverMuted]}
+              >
+                {t('nav.see')} {group.label}
+                <Icon name="ri:arrow-right-s-line" class="size-md" aria-hidden="true" />
+              </a>
+            )}
+          </div>
+          {group.image && (
+            <Image
+              src={group.image.src}
+              alt={group.image.alt}
+              width={group.image.width}
+              height={group.image.height}
+              widths={[384, 768]}
+              sizes="(max-width: 1600px) 25vw, 400px"
+              loading="lazy"
+              class="block aspect-[4/5] h-auto w-full object-cover"
+              style={`object-position:${group.image.position}`}
+            />
+          )}
+        </div>
+      ))
+    }
+  </div>
+</div>

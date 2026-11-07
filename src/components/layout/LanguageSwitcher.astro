@@ -1,10 +1,9 @@
 ---
 /**
- * Language switcher ("ES ▾", Figma nav__language-switcher).
- * Links to the current page's translation when it exists, otherwise to the
- * home page of that language.
+ * Language switcher, segmented as in production ("ES · CA · EN", all visible,
+ * current one highlighted). Links to the current page's translation when it
+ * exists, otherwise to the home page of that language.
  */
-import { Icon } from 'astro-icon/components';
 import { localeMeta, locales, type Locale } from '../../i18n/config';
 import { getRoutePath, type Alternate } from '../../i18n/routes';
 import { useTranslations } from '../../i18n/ui';
@@ -13,62 +12,45 @@ type Props = {
   locale: Locale;
   alternates?: Alternate[];
   surface?: 'light' | 'dark';
-  /** Unique id prefix (the switcher can appear more than once per page). */
-  id: string;
   class?: string;
 };
 
-const { locale, alternates = [], surface = 'light', id, class: className } = Astro.props;
+const { locale, alternates = [], surface = 'dark', class: className } = Astro.props;
 const t = useTranslations(locale);
+const dark = surface === 'dark';
 
 const options = locales.map((l) => ({
   locale: l,
   href: alternates.find((a) => a.locale === l)?.href ?? getRoutePath('home', l),
   ...localeMeta[l],
 }));
-const panelId = `${id}-panel`;
 ---
 
-<div class:list={['relative', className]}>
-  <button
-    type="button"
-    class="t-label flex items-center gap-3xs px-sm py-2xs uppercase"
-    aria-expanded="false"
-    aria-controls={panelId}
-    data-disclosure
-    data-disclosure-group="header"
-  >
-    <span class="sr-only">{t('nav.language')}:</span>
-    {localeMeta[locale].short}
-    <Icon name="ri:arrow-down-s-line" class="size-sm" aria-hidden="true" />
-  </button>
-  <ul
-    id={panelId}
-    hidden
-    class:list={[
-      'absolute right-0 top-full z-50 min-w-full border py-2xs',
-      surface === 'dark' ? 'border-border-inverse bg-bg-inverse' : 'border-border bg-bg',
-    ]}
-  >
-    {
-      options.map((o) => (
-        <li>
-          <a
-            href={o.href}
-            hreflang={o.hreflang}
-            lang={o.hreflang}
-            aria-current={o.locale === locale ? 'true' : undefined}
-            class:list={[
-              't-label block whitespace-nowrap px-sm py-2xs uppercase',
-              surface === 'dark' ? 'hover:text-text-inverse-muted' : 'hover:text-text-muted',
-              o.locale === locale && 'underline underline-offset-4',
-            ]}
-          >
-            {o.short}
-            <span class="sr-only">{o.label}</span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-</div>
+<ul
+  aria-label={t('nav.language')}
+  class:list={[
+    'flex min-h-[calc(var(--spacing-xl)+1.2*var(--text-md)+2px)] gap-[2px] p-3xs',
+    dark ? 'bg-bg-inverse-alt' : 'bg-bg-alt',
+    className,
+  ]}
+>
+  {
+    options.map((o) => (
+      <li class="flex">
+        <a
+          href={o.href}
+          hreflang={o.hreflang}
+          lang={o.hreflang}
+          aria-current={o.locale === locale ? 'true' : undefined}
+          class:list={[
+            't-label flex items-center px-xs py-2xs uppercase transition-colors duration-200',
+            dark ? 'hover:bg-bg-inverse aria-[current]:bg-bg-inverse' : 'hover:bg-bg aria-[current]:bg-bg',
+          ]}
+        >
+          {o.short}
+          <span class="sr-only">{o.label}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

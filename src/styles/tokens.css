@@ -78,6 +78,9 @@
   --color-border-inverse-strong: #ffffff;
 
   /* ---------- Spacing (Figma --space-*) ---------- */
+  /* 0 is needed for utilities like inset-0, top-0, left-0, min-h-0 (the
+     default numeric scale is reset, so Tailwind can't compute "0" otherwise). */
+  --spacing-0: 0rem;
   --spacing-3xs: 0.25rem; /* 4 */
   --spacing-2xs: 0.5rem; /* 8 */
   --spacing-xs: 0.75rem; /* 12 */
@@ -94,6 +97,11 @@
 
   /* ---------- Radius ---------- */
   --radius-full: 9999px;
+
+  /* ---------- Breakpoints ----------
+     md = tablet from 768px; lg = desktop from 1025px (same switch point as the
+     production header: ≤1024px uses the mobile menu). Others: Tailwind defaults. */
+  --breakpoint-lg: 64.0625rem;
 }
 
 /*

@@ -10,7 +10,9 @@ Languages: `es` (root), `ca` (`/ca/`), `en` (`/en/`), with translated slugs.
   (file `g5P0oB7Hi3HO2zHTx7bV11`). Tailwind's default palette/spacing/type scale is reset:
   use only tokens (`text-text-muted`, `bg-bg-inverse`, `p-xl`, `gap-sm`…) and the Figma text
   styles as utilities (`t-display-xl`, `t-heading-lg`, `t-body-md`, `t-label`, `t-caption`…).
-  `px-page` is the page gutter (16px mobile → 160px at 1920). The Figma "Estils" page is legacy.
+  Page content goes in a `wrapper` (max 1600px of content, centered; gutter 1rem mobile / 2rem tablet ≥768px /
+  4rem desktop ≥1025px). Full-bleed backgrounds on an outer element. `lg` = 1025px (desktop, as production).
+  The Figma "Estils" page is legacy.
 - **Styling**: Tailwind classes in components. Scoped `<style>` only where markup can't take classes
   (e.g. WordPress HTML in `src/components/content/Prose.astro`, using `:global()` + `var(--…)` tokens).
 - **Icons**: Remix Icon via `astro-icon` (`<Icon name="ri:arrow-right-line" />`); brand SVGs in `src/icons/`
@@ -29,6 +31,8 @@ Languages: `es` (root), `ca` (`/ca/`), `en` (`/en/`), with translated slugs.
   rebuild trigger, frontend redirect) is installed in `wp-content/mu-plugins/` on the WP server.
   ACF field groups are managed in the ACF Pro UI; the GraphQL names Astro depends on are listed in
   `docs/wordpress-acf.md`, and JSON copies of the groups live in `wordpress/acf-json/`.
+- **Reference code**: `wordpress/reference/` holds code from the current production site (e.g. the header)
+  to replicate its behavior; it is never installed on the headless WordPress.
 - **Checks**: `WP_USE_MOCKS=true npx astro check` and `astro build` (link checker reports broken internal links).
 
 ## Development

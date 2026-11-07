@@ -101,6 +101,10 @@ export const MENU_ITEMS_QUERY = /* GraphQL */ `
         label
         url
         target
+        megaMenu {
+          image { node { sourceUrl altText mediaDetails { width height } } }
+          imagePosition
+        }
       }
     }
   }
@@ -115,6 +119,11 @@ export type WpMenuItem = {
   label: string | null;
   url: string | null;
   target: string | null;
+  /** ACF "Menú: imagen de categoría" (wordpress/acf-json/group_vilax_menu_item_image.json). */
+  megaMenu?: {
+    image: { node: { sourceUrl: string | null; altText: string | null; mediaDetails: { width: number | null; height: number | null } | null } | null } | null;
+    imagePosition: string | null;
+  } | null;
 };
 
 export type WpSeo = {

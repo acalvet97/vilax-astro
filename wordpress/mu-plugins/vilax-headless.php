@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VILAX Headless
  * Description: Headless setup for the Astro frontend: menu locations, ACF Local JSON, rebuild trigger and frontend redirect.
- * Version:     0.3.0
+ * Version:     0.4.0
  *
  * Install: copy this file to wp-content/mu-plugins/ (must-use plugins load automatically)
  * and create the writable folder wp-content/acf-json/ (ACF Local JSON).
@@ -36,6 +36,7 @@ add_action( 'after_setup_theme', function () {
  *    Groups and GraphQL names the Astro site relies on:
  *      User.authorProfile { jobTitle linkedinUrl }   (photo = Gravatar, User.avatar)
  *      Post.postFields    { tldr faqs { tituloFaq textFaq } }
+ *      MenuItem.megaMenu  { image imagePosition }
  *    Renaming them breaks the GraphQL query, and the Astro build fails.
  * ---------------------------------------------------------------------- */
 const VILAX_ACF_JSON_DIR = WP_CONTENT_DIR . '/acf-json';
@@ -48,6 +49,26 @@ add_filter( 'acf/settings/load_json', function ( $paths ) {
 	$paths[] = VILAX_ACF_JSON_DIR;
 	return $paths;
 } );
+
+/* -------------------------------------------------------------------------
+ * 2b. Images uploaded from a menu item (mega-menu images) are public in GraphQL
+ *     An image uploaded from the ACF field of a menu item gets that menu item
+ *     as its parent. WPGraphQL inherits the parent's visibility for attached
+ *     media, and menu items are not public content, so the image would be
+ *     hidden (null) for the public Astro build. Menu images are public anyway.
+ * ---------------------------------------------------------------------- */
+add_filter( 'graphql_data_is_private', function ( $is_private, $model_name, $data ) {
+	if (
+		$is_private
+		&& $data instanceof WP_Post
+		&& 'attachment' === $data->post_type
+		&& $data->post_parent
+		&& 'nav_menu_item' === get_post_type( $data->post_parent )
+	) {
+		return false;
+	}
+	return $is_private;
+}, 10, 3 );
 
 /* -------------------------------------------------------------------------
  * 3. Rebuild trigger

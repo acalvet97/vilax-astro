@@ -1,8 +1,8 @@
 ---
 /**
- * VILAX wordmark (Figma raster asset).
- *  - `header`: 164×59 box showing the full image (Figma Header 1266:15015).
- *  - `footer`: 139×35 box cropping the image's built-in padding (Figma Footer 1428:1860).
+ * VILAX wordmark (production logo files, tightly cropped, ratio ≈ 4.1:1).
+ * Same size everywhere (header, mobile menu, footer), as in production:
+ * 108px mobile → 124px tablet → 135px desktop.
  * TODO: replace with an SVG logo when available (sharper, lighter).
  */
 import { Image } from 'astro:assets';
@@ -11,36 +11,21 @@ import logoWhite from '../../assets/brand/logo-white.png';
 
 type Props = {
   color?: 'black' | 'white';
-  size?: 'header' | 'footer';
+  /** `eager` only for the header logo (above the fold). */
+  loading?: 'eager' | 'lazy';
   class?: string;
 };
 
-const { color = 'black', size = 'header', class: className } = Astro.props;
+const { color = 'black', loading = 'eager', class: className } = Astro.props;
 const src = color === 'white' ? logoWhite : logoBlack;
 ---
 
-{
-  size === 'header' ? (
-    <Image
-      src={src}
-      alt="VILAX"
-      width={164}
-      height={59}
-      densities={[1, 2]}
-      loading="eager"
-      fetchpriority="high"
-      class:list={['block h-[59px] w-[164px] object-cover', className]}
-    />
-  ) : (
-    <span class:list={['relative block h-[35px] w-[139px] overflow-hidden', className]}>
-      <Image
-        src={src}
-        alt="VILAX"
-        width={164}
-        height={60}
-        densities={[1, 2]}
-        class="absolute top-[-36.03%] left-[-8.63%] h-[172.05%] w-[117.99%] max-w-none"
-      />
-    </span>
-  )
-}
+<Image
+  src={src}
+  alt="VILAX"
+  width={135}
+  densities={[1, 2]}
+  loading={loading}
+  fetchpriority={loading === 'eager' ? 'high' : undefined}
+  class:list={['block h-auto w-[108px] md:w-[124px] lg:w-[135px]', className]}
+/>
