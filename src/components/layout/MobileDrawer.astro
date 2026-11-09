@@ -103,11 +103,7 @@ const linkClass = [
             ),
           )}
           {panel.parent?.href && (
-            <MenuLink
-              item={{ ...panel.parent, children: [] }}
-              currentPath={currentPath}
-              class:list={[...linkClass, 'text-accent']}
-            >
+            <MenuLink item={panel.parent} currentPath={currentPath} class:list={[...linkClass, 'text-accent']}>
               <span>
                 {t('nav.see')} {panel.parent.label}
               </span>

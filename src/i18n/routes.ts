@@ -44,9 +44,10 @@ export function getRoutePath(key: RouteKey, locale: Locale, ...segments: Array<s
   return buildPath(locale, routes[key][locale], ...segments);
 }
 
-export type Alternate = { locale: Locale; href: string };
+/** A page in another language (hreflang alternates, language switcher, WP translations). */
+export type Alternate = { locale: Locale; path: string };
 
 /** Alternates for a route that exists in every locale (Astro-owned pages). */
 export function getRouteAlternates(key: RouteKey): Alternate[] {
-  return locales.map((locale) => ({ locale, href: getRoutePath(key, locale) }));
+  return locales.map((locale) => ({ locale, path: getRoutePath(key, locale) }));
 }

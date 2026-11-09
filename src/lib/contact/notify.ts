@@ -1,11 +1,11 @@
 /**
  * Contact form notification email (replaces the Elementor Pro form email).
  *
- * The email provider isn't chosen yet (Resend, existing SMTP…): it plugs in as a
- * `MailTransport`. Keep it fetch-based so it also runs on Cloudflare Workers
+ * The email provider isn't chosen yet (Resend, existing SMTP…): it goes in
+ * `sendMail`. Keep it fetch-based so it also runs on Cloudflare Workers
  * (SMTP/nodemailer only works on Vercel).
  *   - `astro dev`: submissions are printed to the terminal.
- *   - production without a transport: throws, so the form shows its error
+ *   - production without a provider: throws, so the form shows its error
  *     message (with the email address) instead of losing the lead silently.
  */
 import { CONTACT_TO_EMAIL } from 'astro:env/server';
@@ -21,21 +21,20 @@ export type ContactSubmission = {
 };
 
 type Mail = { to: string; replyTo: string; subject: string; text: string; html: string };
-type MailTransport = { send(mail: Mail): Promise<void> };
 
-const consoleTransport: MailTransport = {
-  async send(mail) {
+async function sendMail(mail: Mail): Promise<void> {
+  if (import.meta.env.DEV) {
     console.info(`[contact] Email to ${mail.to} (reply-to ${mail.replyTo})\n${mail.subject}\n\n${mail.text}`);
-  },
-};
-
-// TODO: add the production transport once the provider is chosen.
-const transport: MailTransport | undefined = import.meta.env.DEV ? consoleTransport : undefined;
+    return;
+  }
+  // TODO: send `mail` with the email provider once it's chosen.
+  throw new Error('No email provider configured (src/lib/contact/notify.ts)');
+}
 
 const escapeHtml = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function buildContactMail(data: ContactSubmission): Mail {
+function buildContactMail(data: ContactSubmission): Mail {
   const rows: Array<[string, string | undefined]> = [
     ['Nombre', data.name],
     ['Email', data.email],
@@ -56,6 +55,5 @@ export function buildContactMail(data: ContactSubmission): Mail {
 }
 
 export async function sendContactNotification(data: ContactSubmission): Promise<void> {
-  if (!transport) throw new Error('No email transport configured (src/lib/contact/notify.ts)');
-  await transport.send(buildContactMail(data));
+  await sendMail(buildContactMail(data));
 }

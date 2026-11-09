@@ -17,6 +17,7 @@ import { getRoutePath, type Alternate } from '../../i18n/routes';
 import { useTranslations } from '../../i18n/ui';
 import { getMenu, isActive, isMegaItem } from '../../lib/navigation';
 import MenuLink from '../navigation/MenuLink.astro';
+import Button from '../ui/Button.astro';
 import { headerTheme, type HeaderSurface } from './header-theme';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Logo from './Logo.astro';
@@ -39,6 +40,7 @@ const navLink = [
   'group t-label inline-flex items-center gap-3xs uppercase whitespace-nowrap transition-colors duration-200',
   theme.hoverMuted,
 ];
+const dropdownLink = ['t-label block whitespace-nowrap px-sm py-2xs uppercase', theme.hoverMuted];
 ---
 
 <header class="sticky top-0 z-50">
@@ -95,20 +97,12 @@ const navLink = [
                     >
                       {item.href && (
                         <li>
-                          <MenuLink
-                            item={{ ...item, children: [] }}
-                            currentPath={currentPath}
-                            class:list={['t-label block whitespace-nowrap px-sm py-2xs uppercase', theme.hoverMuted]}
-                          />
+                          <MenuLink item={item} currentPath={currentPath} class:list={dropdownLink} />
                         </li>
                       )}
                       {item.children.map((link) => (
                         <li>
-                          <MenuLink
-                            item={link}
-                            currentPath={currentPath}
-                            class:list={['t-label block whitespace-nowrap px-sm py-2xs uppercase', theme.hoverMuted]}
-                          />
+                          <MenuLink item={link} currentPath={currentPath} class:list={dropdownLink} />
                         </li>
                       ))}
                     </ul>
@@ -122,15 +116,9 @@ const navLink = [
 
       <div class="flex items-stretch gap-sm">
         <LanguageSwitcher locale={locale} alternates={alternates} surface={surface} class="hidden lg:flex" />
-        <a
-          href={getRoutePath('contact', locale)}
-          class:list={[
-            't-label hidden items-center justify-center border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 lg:inline-flex',
-            theme.ctaHover,
-          ]}
-        >
-          {t('nav.contact')}
-        </a>
+        <div class="hidden lg:flex">
+          <Button href={getRoutePath('contact', locale)} surface={surface}>{t('nav.contact')}</Button>
+        </div>
 
         <!-- Burger (mobile/tablet) -->
         <button

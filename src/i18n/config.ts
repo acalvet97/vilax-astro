@@ -1,5 +1,5 @@
 /**
- * Locale configuration. Keep in sync with `i18n` in astro.config.mjs.
+ * Locale configuration (also used by `i18n` in astro.config.mjs).
  * ES is served at the root, CA under /ca/, EN under /en/ (same as production).
  */
 export const locales = ['es', 'ca', 'en'] as const;
@@ -15,10 +15,6 @@ export const localeMeta: Record<
   ca: { label: 'Català', short: 'CA', hreflang: 'ca', ogLocale: 'ca_ES' },
   en: { label: 'English', short: 'EN', hreflang: 'en', ogLocale: 'en_US' },
 };
-
-export function isLocale(value: unknown): value is Locale {
-  return typeof value === 'string' && (locales as readonly string[]).includes(value);
-}
 
 /**
  * WPML language codes per locale (WPML → Languages), used in GraphQL

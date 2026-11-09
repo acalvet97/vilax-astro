@@ -1,39 +1,20 @@
 ---
 /**
- * Prose — renders rich-text HTML coming from WordPress (Gutenberg) or any other
- * trusted source, styled with the VILAX design tokens.
- *
- * Usage:
- *   <Prose html={post.content} />                 // blog post body
- *   <Prose html={caso.content} class="mt-2xl" />  // case study body
- *   <Prose><p>Slot content also works.</p></Prose>
+ * Prose — renders rich-text HTML from WordPress (Gutenberg), styled with the
+ * VILAX design tokens: `<Prose html={post.content} />` (blog post body; case
+ * studies later).
  *
  * The HTML is injected with set:html, so descendant selectors use :global()
  * but stay scoped under this component's .prose wrapper.
  *
  * Security: only pass HTML from trusted sources (our own WordPress).
  */
-import type { HTMLAttributes } from 'astro/types';
+type Props = { html: string; class?: string };
 
-type Props = HTMLAttributes<'div'> & {
-  /** Raw HTML to render. If omitted, the default slot is rendered instead. */
-  html?: string | null;
-  /** Wrapper element. */
-  as?: 'div' | 'article' | 'section';
-};
-
-const { html, as: Tag = 'div', class: className, ...attrs } = Astro.props;
+const { html, class: className } = Astro.props;
 ---
 
-{
-  html ? (
-    <Tag class:list={['prose', className]} {...attrs} set:html={html} />
-  ) : (
-    <Tag class:list={['prose', className]} {...attrs}>
-      <slot />
-    </Tag>
-  )
-}
+<div class:list={['prose', className]} set:html={html} />
 
 <style>
   /* Spacing follows the Figma article (2034:687): paragraphs separated by one

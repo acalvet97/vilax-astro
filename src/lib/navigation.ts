@@ -29,8 +29,12 @@ export function getServiceGroups(primary: MenuItem[]): MenuItem[] {
   return primary.filter(isMegaItem).flatMap((item) => item.children);
 }
 
-/** Whether `item` (or one of its descendants) points to the current page. */
+/** Whether `item` points to the current page. */
+export function isCurrent(item: MenuItem, currentPath: string | undefined): boolean {
+  return !!item.href && !item.external && item.href === currentPath;
+}
+
+/** Whether `item` or one of its descendants points to the current page. */
 export function isActive(item: MenuItem, currentPath: string): boolean {
-  if (item.href && !item.external && item.href === currentPath) return true;
-  return item.children.some((child) => isActive(child, currentPath));
+  return isCurrent(item, currentPath) || item.children.some((child) => isActive(child, currentPath));
 }

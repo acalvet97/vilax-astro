@@ -4,7 +4,7 @@
 import { WP_GRAPHQL_URL } from 'astro:env/server';
 import { site } from '../../config/site';
 import { localeFromWpml, type Locale } from '../../i18n/config';
-import { buildPath, getRoutePath } from '../../i18n/routes';
+import { buildPath, getRoutePath, type Alternate } from '../../i18n/routes';
 import type { WpCategory, WpMenuItem, WpPost, WpSeo, WpTranslation } from './queries';
 
 const wpOrigin = WP_GRAPHQL_URL ? new URL(WP_GRAPHQL_URL).origin : null;
@@ -98,10 +98,6 @@ export type Seo = {
   jsonLd?: string;
 };
 
-export type Image = { src: string; alt: string; width?: number; height?: number };
-
-export type Translation = { locale: Locale; path: string };
-
 export function normalizeSeo(seo: WpSeo): Seo {
   return {
     title: seo?.title ? decodeEntities(seo.title) : undefined,
@@ -118,7 +114,7 @@ export function normalizeSeo(seo: WpSeo): Seo {
 function normalizeTranslations(
   translations: WpTranslation[] | null,
   toPath: (locale: Locale, slug: string) => string,
-): Translation[] {
+): Alternate[] {
   return (translations ?? []).flatMap((t) => {
     const locale = localeFromWpml(t.language?.code);
     return locale ? [{ locale, path: toPath(locale, t.slug) }] : [];
@@ -265,11 +261,8 @@ export function normalizePost(post: WpPost, locale: Locale) {
 export function normalizeAuthor(post: WpPost, locale: Locale) {
   const author = post.author?.node;
   if (!author) return undefined;
-  // Photo = Gravatar. Hidden when the author has no Gravatar (avoids the generic placeholder).
-  const photo =
-    author.avatar?.url && author.avatar.foundAvatar !== false
-      ? { src: author.avatar.url, alt: author.name, width: 512, height: 512 }
-      : undefined;
+  // Photo = Gravatar URL (512px). Hidden when the author has no Gravatar (avoids the generic placeholder).
+  const photo = author.avatar?.url && author.avatar.foundAvatar !== false ? author.avatar.url : undefined;
   return {
     id: entryId(locale, author.slug),
     data: {
@@ -283,7 +276,7 @@ export function normalizeAuthor(post: WpPost, locale: Locale) {
       linkedinUrl: author.authorProfile?.linkedinUrl || undefined,
       photo,
       // Filled in by the loader: other locales where this author has posts.
-      translations: [] as Translation[],
+      translations: [] as Alternate[],
       seo: normalizeSeo(author.seo),
     },
   };

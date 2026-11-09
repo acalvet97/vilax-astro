@@ -14,13 +14,16 @@ const EXCLUDED_CATEGORY = /^(sin-categoria|sin-categorizar|uncategorized)/;
 export type Post = CollectionEntry<'posts'>;
 export type Category = CollectionEntry<'categories'>;
 
+/** "Publicado por …" line of a post card and an article. */
+export type Byline = { name: string; jobTitle?: string; /** Gravatar URL. */ photo?: string };
+
 export type PostCard = {
   title: string;
   path: string;
   date: Date;
   readingMinutes: number;
   category?: { name: string; path: string };
-  author?: { name: string; jobTitle?: string; photo?: { src: string; alt: string } };
+  author?: Byline;
 };
 
 /** Posts of a locale, newest first. */
@@ -45,22 +48,21 @@ export async function getBlogCategories(locale: Locale, posts: Post[]): Promise<
   return categories.sort((a, b) => a.data.name.localeCompare(b.data.name, locale));
 }
 
+export async function getPostByline(post: Post): Promise<Byline | undefined> {
+  const author = post.data.author && (await getEntry(post.data.author));
+  if (!author) return undefined;
+  return { name: author.data.name, jobTitle: author.data.jobTitle, photo: author.data.photo };
+}
+
 export async function toPostCard(post: Post): Promise<PostCard> {
-  const [category] = await getPostCategories(post);
-  const author = post.data.author ? await getEntry(post.data.author) : undefined;
+  const [[category], author] = await Promise.all([getPostCategories(post), getPostByline(post)]);
   return {
     title: post.data.title,
     path: post.data.path,
     date: post.data.date,
     readingMinutes: post.data.readingMinutes,
-    category: category ? { name: category.data.name, path: category.data.path } : undefined,
-    author: author
-      ? {
-          name: author.data.name,
-          jobTitle: author.data.jobTitle,
-          photo: author.data.photo ? { src: author.data.photo.src, alt: author.data.photo.alt || author.data.name } : undefined,
-        }
-      : undefined,
+    category: category && { name: category.data.name, path: category.data.path },
+    author,
   };
 }
 
@@ -100,23 +102,41 @@ export type PostProps = {
   alternates: Alternate[];
 };
 
-function paginate<T>(items: T[]): T[][] {
-  const pages: T[][] = [];
-  for (let i = 0; i < items.length; i += POSTS_PER_PAGE) pages.push(items.slice(i, i + POSTS_PER_PAGE));
-  return pages;
-}
+type BlogPath = { params: { path: string }; props: ArchiveProps | PostProps };
 
 const toParam = (path: string) => path.replace(/^\/+|\/+$/g, '');
 
+/** Every page of a paginated archive: basePath, basePath/page/2/… (alternates only on page 1). */
+function archivePaths(
+  posts: Post[],
+  basePath: string,
+  shared: Pick<ArchiveProps, 'locale' | 'categories' | 'category'>,
+  alternates: Alternate[],
+): BlogPath[] {
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { path: toParam(pagePath(basePath, i + 1)) },
+    props: {
+      template: 'archive',
+      ...shared,
+      posts: posts.slice(i * POSTS_PER_PAGE, (i + 1) * POSTS_PER_PAGE),
+      page: i + 1,
+      totalPages,
+      basePath,
+      alternates: i === 0 ? alternates : [],
+    },
+  }));
+}
+
 /** Every blog URL, for src/pages/[...path].astro. */
-export async function getBlogPaths() {
-  const paths: Array<{ params: { path: string }; props: ArchiveProps | PostProps }> = [];
+export async function getBlogPaths(): Promise<BlogPath[]> {
+  const paths: BlogPath[] = [];
   const postsByLocale = new Map<Locale, Post[]>();
   for (const locale of locales) postsByLocale.set(locale, await getPosts(locale));
 
   // Locales with a blog (production has no Catalan blog).
   const blogLocales = locales.filter((l) => postsByLocale.get(l)!.length > 0);
-  const blogAlternates = blogLocales.map((l) => ({ locale: l, href: getRoutePath('blog', l) }));
+  const blogAlternates = blogLocales.map((l) => ({ locale: l, path: getRoutePath('blog', l) }));
 
   // Fixed Astro routes a post slug must not collide with.
   const reserved = new Set(locales.flatMap((l) => Object.values(routes).map((r) => buildPath(l, r[l]))));
@@ -126,42 +146,14 @@ export async function getBlogPaths() {
     const categories = await getBlogCategories(locale, posts);
 
     // Blog archive: /insights/, /insights/page/2/…
-    const archiveBase = getRoutePath('blog', locale);
-    paginate(posts).forEach((pagePosts, i) => {
-      paths.push({
-        params: { path: toParam(pagePath(archiveBase, i + 1)) },
-        props: {
-          template: 'archive',
-          locale,
-          posts: pagePosts,
-          page: i + 1,
-          totalPages: Math.ceil(posts.length / POSTS_PER_PAGE),
-          basePath: archiveBase,
-          categories,
-          alternates: i === 0 ? blogAlternates : [],
-        },
-      });
-    });
+    paths.push(...archivePaths(posts, getRoutePath('blog', locale), { locale, categories }, blogAlternates));
 
     // Category archives: /category/seo/, /category/seo/page/2/…
     for (const category of categories) {
       const categoryPosts = posts.filter((p) => p.data.categories.some((c) => c.id === category.id));
-      paginate(categoryPosts).forEach((pagePosts, i) => {
-        paths.push({
-          params: { path: toParam(pagePath(category.data.path, i + 1)) },
-          props: {
-            template: 'archive',
-            locale,
-            posts: pagePosts,
-            page: i + 1,
-            totalPages: Math.ceil(categoryPosts.length / POSTS_PER_PAGE),
-            basePath: category.data.path,
-            categories,
-            category,
-            alternates: i === 0 ? category.data.translations.map((t) => ({ locale: t.locale, href: t.path })) : [],
-          },
-        });
-      });
+      paths.push(
+        ...archivePaths(categoryPosts, category.data.path, { locale, categories, category }, category.data.translations),
+      );
     }
 
     // Posts: /<slug>/, /en/<slug>/
@@ -176,7 +168,7 @@ export async function getBlogPaths() {
           locale,
           post,
           related: getRelatedPosts(post, posts),
-          alternates: post.data.translations.map((t) => ({ locale: t.locale, href: t.path })),
+          alternates: post.data.translations,
         },
       });
     }
@@ -186,7 +178,7 @@ export async function getBlogPaths() {
   // (e.g. a category translated in WP but without posts in that language).
   const generated = new Set(paths.map((p) => `/${p.params.path}/`));
   for (const { props } of paths) {
-    props.alternates = props.alternates.filter((a) => generated.has(a.href));
+    props.alternates = props.alternates.filter((a) => generated.has(a.path));
   }
   return paths;
 }

@@ -7,11 +7,12 @@
 import { localeMeta, locales, type Locale } from '../../i18n/config';
 import { getRoutePath, type Alternate } from '../../i18n/routes';
 import { useTranslations } from '../../i18n/ui';
+import type { HeaderSurface } from './header-theme';
 
 type Props = {
   locale: Locale;
   alternates?: Alternate[];
-  surface?: 'light' | 'dark';
+  surface?: HeaderSurface;
   class?: string;
 };
 
@@ -21,7 +22,7 @@ const dark = surface === 'dark';
 
 const options = locales.map((l) => ({
   locale: l,
-  href: alternates.find((a) => a.locale === l)?.href ?? getRoutePath('home', l),
+  href: alternates.find((a) => a.locale === l)?.path ?? getRoutePath('home', l),
   ...localeMeta[l],
 }));
 ---

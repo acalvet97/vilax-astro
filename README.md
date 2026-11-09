@@ -1,46 +1,29 @@
-# Astro Starter Kit: Basics
+# VILAX website
+
+Static [Astro](https://astro.build) site for [www.vilax.es](https://www.vilax.es) with a headless
+WordPress (WPML + ACF + Yoast + WPGraphQL) for blog posts, authors, categories, case studies and menus.
+Languages: `es` (root), `ca` (`/ca/`), `en` (`/en/`).
+
+## Setup
 
 ```sh
-npm create astro@latest -- --template basics
+cp .env.example .env   # WP_GRAPHQL_URL of the headless WordPress
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
+| Command                               | Action                                                         |
+| :------------------------------------ | :------------------------------------------------------------- |
+| `npm run dev`                         | Dev server (mock WordPress data when `WP_GRAPHQL_URL` is unset) |
+| `WP_USE_MOCKS=true npx astro check`   | Type check with mock data                                      |
+| `WP_USE_MOCKS=true npx astro build`   | Build with mock data                                           |
+| `npm run build`                       | Production build against WordPress (fails if data is missing)  |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Documentation
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [AGENTS.md](AGENTS.md): conventions (design tokens, styling, i18n, WordPress data, navigation, pages).
+- [CLAUDE.md](CLAUDE.md): architecture map, decisions, gotchas and status.
+- [docs/](docs/): WordPress menus and ACF field groups.
+- [wordpress/](wordpress/): mu-plugin and ACF JSON exports for the headless WordPress.

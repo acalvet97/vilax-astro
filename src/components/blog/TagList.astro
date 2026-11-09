@@ -3,40 +3,34 @@
  * Pill list (Figma "Tag_list", 2034:3411 / 2034:748). Used for category
  * filters on the blog archive and the categories of an article.
  */
-type Item = { label: string; href?: string; current?: boolean };
+type Item = { label: string; href: string; current?: boolean };
 
 type Props = {
   items: Item[];
   /** Archive filters are uppercase in Figma; article pills are not. */
   uppercase?: boolean;
   label?: string;
-  class?: string;
 };
 
-const { items, uppercase = false, label, class: className } = Astro.props;
-const pill = 't-caption inline-flex items-center rounded-full px-sm py-2xs';
+const { items, uppercase = false, label } = Astro.props;
 ---
 
 {
   items.length > 0 && (
-    <ul class:list={['flex flex-wrap items-center gap-xs', className]} aria-label={label}>
+    <ul class="flex flex-wrap items-center gap-xs" aria-label={label}>
       {items.map((item) => (
         <li>
-          {item.href ? (
-            <a
-              href={item.href}
-              aria-current={item.current ? 'page' : undefined}
-              class:list={[
-                pill,
-                uppercase && 'uppercase',
-                item.current ? 'bg-accent text-text-on-accent' : 'bg-bg-alt hover:bg-border',
-              ]}
-            >
-              {item.label}
-            </a>
-          ) : (
-            <span class:list={[pill, uppercase && 'uppercase', 'bg-bg-alt']}>{item.label}</span>
-          )}
+          <a
+            href={item.href}
+            aria-current={item.current ? 'page' : undefined}
+            class:list={[
+              't-caption inline-flex items-center rounded-full px-sm py-2xs',
+              uppercase && 'uppercase',
+              item.current ? 'bg-accent text-text-on-accent' : 'bg-bg-alt hover:bg-border',
+            ]}
+          >
+            {item.label}
+          </a>
         </li>
       ))}
     </ul>

@@ -8,16 +8,14 @@ import { locales, wpmlCodes, type Locale } from '../../i18n/config';
 import { wpQueryAll } from './client';
 import { getMockMenuItems } from './mocks/menus';
 import { getMockCategories, getMockPosts } from './mocks/posts';
-import { buildMenuTree, normalizeAuthor, normalizeCategory, normalizePost, type Translation } from './normalize';
+import type { Alternate } from '../../i18n/routes';
+import { buildMenuTree, normalizeAuthor, normalizeCategory, normalizePost } from './normalize';
 import {
   CATEGORIES_QUERY,
   MENU_ITEMS_QUERY,
   MENU_LOCATIONS,
   POSTS_QUERY,
-  type CategoriesData,
-  type MenuItemsData,
   type MenuLocation,
-  type PostsData,
   type WpCategory,
   type WpMenuItem,
   type WpPost,
@@ -26,14 +24,30 @@ import { getDataSource, type DataSource } from './source';
 
 type Entry = { id: string; data: Record<string, unknown> };
 
+// ---------- Fetchers (WordPress or mocks) ----------
+
 /** Posts per locale, fetched once per build and shared by the posts and authors loaders. */
 const postsCache = new Map<Locale, Promise<WpPost[]>>();
 function fetchPosts(locale: Locale, source: DataSource): Promise<WpPost[]> {
   if (source === 'mock') return Promise.resolve(getMockPosts(locale));
   if (!postsCache.has(locale)) {
-    postsCache.set(locale, wpQueryAll<PostsData, WpPost>(POSTS_QUERY, { language: wpmlCodes[locale] }, (d) => d.posts));
+    postsCache.set(locale, wpQueryAll<WpPost>(POSTS_QUERY, { language: wpmlCodes[locale] }, 'posts'));
   }
   return postsCache.get(locale)!;
+}
+
+async function fetchCategories(locale: Locale, source: DataSource): Promise<WpCategory[]> {
+  if (source === 'mock') return getMockCategories(locale);
+  return wpQueryAll<WpCategory>(CATEGORIES_QUERY, { language: wpmlCodes[locale] }, 'categories');
+}
+
+async function fetchMenuItems(location: MenuLocation, locale: Locale, source: DataSource): Promise<WpMenuItem[]> {
+  if (source === 'mock') return getMockMenuItems(location, locale);
+  return wpQueryAll<WpMenuItem>(
+    MENU_ITEMS_QUERY,
+    { location: location.toUpperCase(), language: wpmlCodes[locale] },
+    'menuItems',
+  );
 }
 
 /**
@@ -89,7 +103,7 @@ export function authorsLoader(): Loader {
     for (const entry of entries) {
       entry.data.translations = entries
         .filter((other) => other.data.slug === entry.data.slug && other.data.locale !== entry.data.locale)
-        .map<Translation>((other) => ({ locale: other.data.locale, path: other.data.path }));
+        .map<Alternate>((other) => ({ locale: other.data.locale, path: other.data.path }));
     }
     return entries;
   });
@@ -98,12 +112,7 @@ export function authorsLoader(): Loader {
 export function categoriesLoader(): Loader {
   return wpLoader('wp-categories', async (source) => {
     const perLocale = await Promise.all(
-      locales.map(async (locale) =>
-        (source === 'mock'
-          ? getMockCategories(locale)
-          : await wpQueryAll<CategoriesData, WpCategory>(CATEGORIES_QUERY, { language: wpmlCodes[locale] }, (d) => d.categories)
-        ).map((c) => normalizeCategory(c, locale)),
-      ),
+      locales.map(async (locale) => (await fetchCategories(locale, source)).map((c) => normalizeCategory(c, locale))),
     );
     return perLocale.flat();
   });
@@ -123,10 +132,7 @@ export function menusLoader(): Loader {
     const entries: Entry[] = [];
     for (const location of MENU_LOCATIONS) {
       for (const locale of locales) {
-        let items =
-          source === 'mock'
-            ? getMockMenuItems(location, locale)
-            : await fetchMenuItems(location, locale);
+        let items = await fetchMenuItems(location, locale, source);
         if (items.length === 0) {
           const message =
             `WordPress menu "${location}" has no items for language "${locale}". ` +
@@ -140,12 +146,4 @@ export function menusLoader(): Loader {
     }
     return entries;
   });
-}
-
-function fetchMenuItems(location: MenuLocation, locale: Locale): Promise<WpMenuItem[]> {
-  return wpQueryAll<MenuItemsData, WpMenuItem>(
-    MENU_ITEMS_QUERY,
-    { location: location.toUpperCase(), language: wpmlCodes[locale] },
-    (d) => d.menuItems,
-  );
 }

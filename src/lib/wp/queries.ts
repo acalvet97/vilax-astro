@@ -1,17 +1,16 @@
 /**
  * GraphQL queries against WordPress (WPGraphQL + WPML + Yoast + ACF).
  *
- * Required plugins (see docs/wordpress-setup.md):
+ * Required plugins:
  *   - WPGraphQL                    → base schema
- *   - WPML (GraphQL enabled)       → where: { language }, language, translations
- *   - WPGraphQL Yoast SEO          → seo { … }
+ *   - WPML (GraphQL enabled)       → where: { language }, translations
+ *   - WPGraphQL Yoast SEO          → seo { … } (its canonical is not fetched: it points at the WP host)
  *   - WPGraphQL for ACF            → authorProfile, postFields, cta, megaMenu (see docs/wordpress-acf.md)
  */
 
 const SEO_FIELDS = /* GraphQL */ `
   title
   metaDesc
-  canonical
   metaRobotsNoindex
   opengraphImage { sourceUrl }
   schema { raw }
@@ -30,7 +29,6 @@ export const POSTS_QUERY = /* GraphQL */ `
         content
         date
         modified
-        language { code }
         translations { slug language { code } }
         categories { nodes { slug name } }
         postFields {
@@ -130,7 +128,6 @@ export type WpMenuItem = {
 export type WpSeo = {
   title: string | null;
   metaDesc: string | null;
-  canonical: string | null;
   metaRobotsNoindex: string | null;
   opengraphImage: { sourceUrl: string | null } | null;
   schema: { raw: string | null } | null;
@@ -160,7 +157,6 @@ export type WpPost = {
   content: string | null;
   date: string;
   modified: string;
-  language: { code: string } | null;
   translations: WpTranslation[] | null;
   categories: { nodes: Array<{ slug: string; name: string }> } | null;
   postFields: {
@@ -181,11 +177,3 @@ export type WpCategory = {
   translations: WpTranslation[] | null;
   seo: WpSeo;
 };
-
-type ConnectionData<K extends string, T> = Record<
-  K,
-  { pageInfo: { hasNextPage: boolean; endCursor: string | null }; nodes: T[] }
->;
-export type PostsData = ConnectionData<'posts', WpPost>;
-export type CategoriesData = ConnectionData<'categories', WpCategory>;
-export type MenuItemsData = ConnectionData<'menuItems', WpMenuItem>;
