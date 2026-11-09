@@ -24,13 +24,6 @@ const seo = z.object({
   jsonLd: z.string().optional(),
 });
 
-const image = z.object({
-  src: z.string(),
-  alt: z.string().default(''),
-  width: z.number().optional(),
-  height: z.number().optional(),
-});
-
 const translations = z.array(z.object({ locale, path: z.string() })).default([]);
 
 const posts = defineCollection({
@@ -75,7 +68,8 @@ const authors = defineCollection({
     bio: z.string(),
     jobTitle: z.string().optional(),
     linkedinUrl: z.url().optional(),
-    photo: image.optional(),
+    /** Gravatar URL (512px). */
+    photo: z.string().optional(),
     translations,
     seo,
   }),

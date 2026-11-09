@@ -4,13 +4,15 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
+import { site } from './src/config/site.ts';
+import { defaultLocale, locales } from './src/i18n/config.ts';
 import { linkCheck } from './src/integrations/link-check.ts';
 
 // Host that serves WordPress media (used for build-time image optimization).
 const WP_MEDIA_HOST = 'vilaxheadless.staging.vilax.es';
 
 export default defineConfig({
-  site: 'https://www.vilax.es',
+  site: site.url,
   trailingSlash: 'always',
   output: 'static',
   // Every page is prerendered; the adapter only runs the Astro Actions
@@ -19,8 +21,8 @@ export default defineConfig({
   adapter: vercel(),
 
   i18n: {
-    defaultLocale: 'es',
-    locales: ['es', 'ca', 'en'],
+    defaultLocale,
+    locales: [...locales],
     routing: { prefixDefaultLocale: false },
   },
 

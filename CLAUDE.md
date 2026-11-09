@@ -50,7 +50,8 @@ src/
     content/        Prose (WordPress HTML, scoped :global styles)
     sections/       CtaBanner (dark band with dotted map; reusable), ClientLogos (rotating), FaqSection
     contact/        ContactForm, FormField, OfficeMap (Google Maps embed)
-    ui/             Button (primary), FaqAccordion (shared by blog Faqs and FaqSection)
+    ui/             Button (primary; `surface` light/dark sets the hover colors; used by the header Contact
+                    button, CtaBanner and forms), FaqAccordion (shared by blog Faqs and FaqSection)
     site/           AiLinks ("Ask AI" buttons, takes a prompt), SocialLinks
     navigation/     MenuLink (one WP menu item → link)
     seo/            Seo (title, canonical, hreflang, OG, JSON-LD)

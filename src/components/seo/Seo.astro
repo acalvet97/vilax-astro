@@ -32,7 +32,7 @@ const absolute = (path: string) => new URL(path, site.url).href;
 
 // Self + translations, one per locale.
 const links = new Map<Locale, string>([[locale, canonical]]);
-for (const a of alternates) if (!links.has(a.locale)) links.set(a.locale, absolute(a.href));
+for (const a of alternates) if (!links.has(a.locale)) links.set(a.locale, absolute(a.path));
 const xDefault = links.get(defaultLocale);
 const hasTranslations = links.size > 1;
 ---

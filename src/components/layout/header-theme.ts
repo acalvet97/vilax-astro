@@ -19,8 +19,6 @@ export type HeaderTheme = {
   hoverFg: string;
   selectedFg: string;
   currentFg: string;
-  /** Contact button hover: transparent with a border in the main color. */
-  ctaHover: string;
 };
 
 export function headerTheme(surface: HeaderSurface): HeaderTheme {
@@ -33,7 +31,6 @@ export function headerTheme(surface: HeaderSurface): HeaderTheme {
         hoverFg: 'hover:text-text-inverse-muted',
         selectedFg: 'aria-selected:text-text-inverse-muted',
         currentFg: 'aria-[current=page]:text-text-inverse-muted',
-        ctaHover: 'hover:border-text-inverse-muted hover:bg-transparent hover:text-text-inverse-muted',
       }
     : {
         surface: 'bg-bg text-text',
@@ -42,6 +39,5 @@ export function headerTheme(surface: HeaderSurface): HeaderTheme {
         hoverFg: 'hover:text-text',
         selectedFg: 'aria-selected:text-text',
         currentFg: 'aria-[current=page]:text-text',
-        ctaHover: 'hover:border-text hover:bg-transparent hover:text-text',
       };
 }

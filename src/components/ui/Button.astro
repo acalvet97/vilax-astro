@@ -1,27 +1,36 @@
 ---
 /**
  * Primary button (Figma "hero__main--button-primary"): accent fill; on hover,
- * transparent with a border in the text color (same as the header Contact
- * button on light surfaces). Renders <a> with `href`, otherwise <button>.
+ * transparent with a border in the main text color of the surface it sits on
+ * (`surface`: light = page background, dark = inverse background).
+ * Renders <a> with `href`, otherwise <button> (`type="button"` unless `type` is given).
  */
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = (HTMLAttributes<'a'> & { href: string }) | (HTMLAttributes<'button'> & { href?: undefined });
+type Props = { surface?: 'light' | 'dark' } & (
+  | (HTMLAttributes<'a'> & { href: string })
+  | (HTMLAttributes<'button'> & { href?: undefined })
+);
 
-const { class: className, ...attrs } = Astro.props;
+// `type` is taken out so the <button> renders a single type attribute
+// (with a duplicate, browsers keep the first one).
+const { surface = 'light', class: className, href, type, ...attrs } = Astro.props;
 const classes = [
-  't-label inline-flex items-center justify-center border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 hover:border-text hover:bg-transparent hover:text-text disabled:pointer-events-none disabled:opacity-60',
+  't-label inline-flex items-center justify-center border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 hover:bg-transparent disabled:pointer-events-none disabled:opacity-60',
+  surface === 'dark'
+    ? 'hover:border-text-inverse-muted hover:text-text-inverse-muted'
+    : 'hover:border-text hover:text-text',
   className,
 ];
 ---
 
 {
-  'href' in attrs && attrs.href !== undefined ? (
-    <a class:list={classes} {...(attrs as HTMLAttributes<'a'>)}>
+  href !== undefined ? (
+    <a href={href} class:list={classes} {...(attrs as HTMLAttributes<'a'>)}>
       <slot />
     </a>
   ) : (
-    <button type="button" class:list={classes} {...(attrs as HTMLAttributes<'button'>)}>
+    <button type={(type as HTMLAttributes<'button'>['type']) ?? 'button'} class:list={classes} {...(attrs as HTMLAttributes<'button'>)}>
       <slot />
     </button>
   )

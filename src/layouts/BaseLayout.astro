@@ -8,11 +8,12 @@ import { Font } from 'astro:assets';
 import '../styles/global.css';
 import Footer from '../components/layout/Footer.astro';
 import Header from '../components/layout/Header.astro';
+import type { HeaderSurface } from '../components/layout/header-theme';
 import Seo, { type SeoProps } from '../components/seo/Seo.astro';
 import { localeMeta } from '../i18n/config';
 
 type Props = SeoProps & {
-  headerSurface?: 'light' | 'dark';
+  headerSurface?: HeaderSurface;
 };
 
 // Header is dark by default (as in production); blog templates pass 'light'.

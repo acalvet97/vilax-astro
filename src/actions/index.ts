@@ -25,19 +25,13 @@ export const server = {
       // Honeypot: hidden from people, bots tend to fill it.
       website: z.string().optional(),
     }),
-    handler: async (input) => {
+    // `privacy` is already validated (must be accepted); the email doesn't include it.
+    handler: async ({ website, privacy, ...submission }) => {
       // Pretend it worked so bots don't learn anything.
-      if (input.website) return { ok: true };
+      if (website) return { ok: true };
 
       try {
-        await sendContactNotification({
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          company: input.company,
-          message: input.message,
-          locale: input.locale,
-        });
+        await sendContactNotification(submission);
       } catch (error) {
         console.error('[contact] Notification email failed:', error);
         throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not send the message' });

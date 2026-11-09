@@ -33,7 +33,7 @@ const [primary, footer, legal] = await Promise.all([
 
 type Column = { heading: MenuItem | string; items: MenuItem[] };
 const columns: Column[] = [
-  ...getServiceGroups(primary).map((group) => ({ heading: { ...group, children: [] }, items: group.children })),
+  ...getServiceGroups(primary).map((group) => ({ heading: group, items: group.children })),
   { heading: t('footer.about'), items: footer },
 ];
 

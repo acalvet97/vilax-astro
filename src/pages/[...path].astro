@@ -5,7 +5,8 @@
  *   /en/insights/  /en/<post-slug>/ …
  * Fixed Astro pages (src/pages/**) take priority over this catch-all route.
  */
-import { getBlogPaths, type ArchiveProps, type PostProps } from '../lib/blog';
+import type { InferGetStaticPropsType } from 'astro';
+import { getBlogPaths } from '../lib/blog';
 import BlogArchive from '../templates/BlogArchive.astro';
 import BlogPost from '../templates/BlogPost.astro';
 
@@ -13,7 +14,9 @@ export async function getStaticPaths() {
   return getBlogPaths();
 }
 
-const props = Astro.props as ArchiveProps | PostProps;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const props = Astro.props;
 ---
 
 {props.template === 'archive' ? <BlogArchive {...props} /> : <BlogPost {...props} />}

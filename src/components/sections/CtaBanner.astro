@@ -11,23 +11,23 @@ import mapDots from '../../assets/decor/map-dots.svg';
 import type { Locale } from '../../i18n/config';
 import { getRoutePath } from '../../i18n/routes';
 import { useTranslations } from '../../i18n/ui';
+import Button from '../ui/Button.astro';
 
 type Props = {
   locale: Locale;
   eyebrow?: string;
   title?: string;
   text?: string;
-  class?: string;
 };
 
-const { locale, class: className, ...copy } = Astro.props;
+const { locale, ...copy } = Astro.props;
 const t = useTranslations(locale);
 const eyebrow = copy.eyebrow || t('cta.eyebrow');
 const title = copy.title || t('cta.title');
 const text = copy.text || t('cta.text');
 ---
 
-<section aria-labelledby="cta-banner-title" class:list={['relative overflow-hidden bg-bg-inverse', className]}>
+<section aria-labelledby="cta-banner-title" class="relative overflow-hidden bg-bg-inverse">
   <!-- Decorative map: same position as in Figma (x=767 at 1920px = 193px left of the center, y=-110px) -->
   <img
     src={mapDots.src}
@@ -51,11 +51,8 @@ const text = copy.text || t('cta.text');
       <p class="t-body-lg max-w-[45.9375rem] text-text-inverse-muted">{text}</p>
     </div>
 
-    <a
-      href={getRoutePath('contact', locale)}
-      class="t-label inline-flex shrink-0 items-center justify-center self-start border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 hover:border-text-inverse-muted hover:bg-transparent hover:text-text-inverse-muted lg:self-auto"
-    >
+    <Button href={getRoutePath('contact', locale)} surface="dark" class="shrink-0 self-start lg:self-auto">
       {t('cta.button')}
-    </a>
+    </Button>
   </div>
 </section>
