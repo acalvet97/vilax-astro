@@ -13,7 +13,7 @@ Rebuild of **www.vilax.es** (today: WordPress + Elementor Pro + WPML + ACF + Yoa
 | Production (reference) | https://www.vilax.es |
 | Headless WordPress (staging) | https://vilaxheadless.staging.vilax.es (GraphQL: `/graphql`) |
 | Figma | file `g5P0oB7Hi3HO2zHTx7bV11` ("VILAX WEB 2026"): page "Dissenys per maquetar · Sistema" (designs), "Components" (Header 1268:15098/15099, Footer 1428:1929 desktop / 1428:2348 mobile) |
-| Repo | github.com/acalvet97/vilax-astro (private). Work branch `setup/foundation`; `main` still has only the Astro starter |
+| Repo | github.com/acalvet97/vilax-astro (private). `main` = up to date (fast-forwarded from `setup/foundation` on 2026-11-09) |
 | Production header code | `wordpress/reference/production-header/` (reference only) |
 
 WordPress manages **only** blog posts, authors, categories, case studies (future), navigation menus and the ACF fields listed in `docs/wordpress-acf.md`. Home, services, about, contact, legal pages and landings are built 100% in Astro (copy in Astro, 3 languages).
@@ -27,7 +27,10 @@ WordPress manages **only** blog posts, authors, categories, case studies (future
 - Don't build pages that have no Figma design (e.g. the author page waits for its design).
 - Verify against the real staging (GraphQL) and report concrete results. If you patch code temporarily to test something, back it up and restore it, and say so.
 - He runs `npm run dev` in **his own terminal**: Astro 7 refuses a second dev server in the same project, and you must not stop his. WordPress data loads only at startup → after WP or loader changes he must restart it.
-- Commit/push only when he asks; commits go on `setup/foundation`.
+- **Git workflow**: one branch per feature or fix, created from an up-to-date `main`
+  (`feature/<name>`, `fix/<name>`, `chore/<name>`, `docs/<name>`). Commit/push only when he asks; then
+  open a pull request into `main` with `gh pr create`. **He reviews and merges PRs on GitHub** — don't merge
+  unless he asks. Never commit directly to `main`.
 - Headless browsers can't take screenshots in this environment: ask him to check visuals.
 
 ## Architecture map
