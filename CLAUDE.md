@@ -49,7 +49,7 @@ src/
     blog/           PostCard, AuthorByline, TableOfContents, Faqs, TagList, Pagination
     content/        Prose (WordPress HTML, scoped :global styles)
     sections/       CtaBanner (dark band with dotted map; reusable), ClientLogos (rotating), FaqSection
-    contact/        ContactForm, FormField, OfficeMap (click-to-load Google Maps)
+    contact/        ContactForm, FormField, OfficeMap (Google Maps embed)
     ui/             Button (primary), FaqAccordion (shared by blog Faqs and FaqSection)
     site/           AiLinks ("Ask AI" buttons, takes a prompt), SocialLinks
     navigation/     MenuLink (one WP menu item → link)
@@ -145,7 +145,7 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
   `lib/contact/notify.ts` prints to the terminal in dev and fails (form shows the email address) in production.
   Client logos: 10 production PNGs, 4 slots, slots change in shuffled rounds every 2s (800ms fades; static
   with reduced motion).
-  FAQs: production ES copy, CA/EN translated (pending review). Map loads only on click.
+  FAQs: production ES copy, CA/EN translated (pending review). Map: lazy-loaded Google Maps embed.
 - **Images**: WP media optimized at build (`image.domains`: staging host + `www.vilax.es`); Gravatar via
   `remotePatterns`. Logos are production PNGs (TODO: SVG). `map-dots.svg` is the Figma dots layer only.
 

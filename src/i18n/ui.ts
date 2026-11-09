@@ -69,9 +69,6 @@ const es = {
   'form.errorField': 'Revisa este campo.',
   'form.errorGeneral': 'No hemos podido enviar tu solicitud. Inténtalo de nuevo o escríbenos a',
   'form.noscript': 'Para enviar el formulario necesitas activar JavaScript. También puedes escribirnos a',
-  'map.load': 'Ver mapa',
-  'map.notice': 'El mapa se carga desde Google Maps.',
-  'map.open': 'Abrir en Google Maps',
   'map.title': 'Mapa de la oficina de VILAX',
 };
 
@@ -142,9 +139,6 @@ const ca: Record<UiKey, string> = {
   'form.errorField': 'Revisa aquest camp.',
   'form.errorGeneral': 'No hem pogut enviar la teva sol·licitud. Torna-ho a provar o escriu-nos a',
   'form.noscript': 'Per enviar el formulari has d’activar JavaScript. També pots escriure’ns a',
-  'map.load': 'Veure el mapa',
-  'map.notice': 'El mapa es carrega des de Google Maps.',
-  'map.open': 'Obrir a Google Maps',
   'map.title': 'Mapa de l’oficina de VILAX',
 };
 
@@ -213,9 +207,6 @@ const en: Record<UiKey, string> = {
   'form.errorField': 'Please check this field.',
   'form.errorGeneral': 'We couldn’t send your request. Please try again or email us at',
   'form.noscript': 'You need JavaScript to send this form. You can also email us at',
-  'map.load': 'Show map',
-  'map.notice': 'The map loads from Google Maps.',
-  'map.open': 'Open in Google Maps',
   'map.title': 'Map of the VILAX office',
 };
 
