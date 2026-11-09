@@ -123,23 +123,19 @@ export function categoriesLoader(): Loader {
 /**
  * One entry per menu location and locale, id `<location>/<locale>`.
  * Every location must have items in every locale: an empty or missing menu
- * fails `astro build` instead of shipping an incomplete header/footer.
- * In `astro dev` only, a missing menu falls back to its mock (with a warning)
- * so the rest of the WordPress content can be worked on.
+ * fails the build (and `astro dev`) instead of shipping an incomplete header/footer.
  */
 export function menusLoader(): Loader {
-  return wpLoader('wp-menus', async (source, { logger }) => {
+  return wpLoader('wp-menus', async (source) => {
     const entries: Entry[] = [];
     for (const location of MENU_LOCATIONS) {
       for (const locale of locales) {
-        let items = await fetchMenuItems(location, locale, source);
+        const items = await fetchMenuItems(location, locale, source);
         if (items.length === 0) {
-          const message =
+          throw new Error(
             `WordPress menu "${location}" has no items for language "${locale}". ` +
-            `Assign a menu to this location in WP (Appearance → Menus) for every language.`;
-          if (!import.meta.env.DEV) throw new Error(message);
-          logger.warn(`${message} Using its MOCK in dev.`);
-          items = getMockMenuItems(location, locale);
+              `Assign a menu to this location in WP (Appearance → Menus) for every language.`,
+          );
         }
         entries.push({ id: `${location}/${locale}`, data: { location, locale, items: buildMenuTree(items) } });
       }
