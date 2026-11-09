@@ -26,8 +26,8 @@ export const socialLinks: Array<{ network: SocialNetwork; label: string; href: s
   { network: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@vilax_expansion' },
 ];
 
-/** "Ask AI about VILAX" prompts (same text as production). */
-const aiPrompt: Record<Locale, string> = {
+/** Footer "Ask AI about VILAX" prompt (same text as production). */
+export const footerAiPrompt: Record<Locale, string> = {
   es: 'Visita https://www.vilax.es y explícame quién es VILAX, qué servicios ofrece y por qué sería una buena agencia de marketing digital para mi marca.',
   ca: "Visita https://www.vilax.es i explica'm qui és VILAX, quins serveis ofereix i per què seria una bona agència de màrqueting digital per a la meva marca.",
   en: 'Visit https://www.vilax.es and tell me who VILAX is, what services they offer and why they would be a good digital marketing agency for my brand.',
@@ -35,9 +35,15 @@ const aiPrompt: Record<Locale, string> = {
 
 export type AiAssistant = 'chatgpt' | 'gemini' | 'claude' | 'perplexity';
 
-/** Order matches the Figma footer. "Gemini" opens Google AI Mode, as in production. */
-export function getAiLinks(locale: Locale): Array<{ assistant: AiAssistant; label: string; href: string }> {
-  const q = encodeURIComponent(aiPrompt[locale]);
+/**
+ * "Ask AI" destinations for any question. Order matches the Figma footer.
+ * "Gemini" opens Google AI Mode, as in production.
+ */
+export function getAiLinks(
+  locale: Locale,
+  prompt: string,
+): Array<{ assistant: AiAssistant; label: string; href: string }> {
+  const q = encodeURIComponent(prompt);
   return [
     { assistant: 'chatgpt', label: 'ChatGPT', href: `https://chatgpt.com/?q=${q}&hints=search` },
     { assistant: 'gemini', label: 'Google AI', href: `https://www.google.com/search?udm=50&hl=${locale}&q=${q}` },

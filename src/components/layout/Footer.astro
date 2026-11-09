@@ -7,23 +7,17 @@
  *     (Servicios → categories), so services are edited in one place;
  *   - last column: the WordPress `footer` menu ("About").
  * Bottom bar: the WordPress `legal` menu.
- * Contact details, social links and "Ask AI" links: src/config/site.ts.
+ * Contact details and the "Ask AI" prompt: src/config/site.ts.
+ * Social and AI icons: src/components/site/.
  */
-import { Icon } from 'astro-icon/components';
-import { getAiLinks, site, socialLinks, type AiAssistant, type SocialNetwork } from '../../config/site';
+import { footerAiPrompt, site } from '../../config/site';
 import type { Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { getMenu, getServiceGroups, type MenuItem } from '../../lib/navigation';
 import MenuLink from '../navigation/MenuLink.astro';
+import AiLinks from '../site/AiLinks.astro';
+import SocialLinks from '../site/SocialLinks.astro';
 import Logo from './Logo.astro';
-
-import ChatGpt from '../../icons/chatgpt.svg';
-import Behance from '../../icons/social/behance.svg';
-import Facebook from '../../icons/social/facebook.svg';
-import Instagram from '../../icons/social/instagram.svg';
-import Linkedin from '../../icons/social/linkedin.svg';
-import Tiktok from '../../icons/social/tiktok.svg';
-import Youtube from '../../icons/social/youtube.svg';
 
 type Props = { locale: Locale };
 
@@ -43,20 +37,6 @@ const columns: Column[] = [
   { heading: t('footer.about'), items: footer },
 ];
 
-const socialIcons: Record<SocialNetwork, typeof Linkedin> = {
-  linkedin: Linkedin,
-  instagram: Instagram,
-  facebook: Facebook,
-  tiktok: Tiktok,
-  behance: Behance,
-  youtube: Youtube,
-};
-const aiIcons: Record<Exclude<AiAssistant, 'chatgpt'>, string> = {
-  gemini: 'ri:gemini-fill',
-  claude: 'ri:claude-fill',
-  perplexity: 'ri:perplexity-fill',
-};
-const aiLinks = getAiLinks(locale);
 const year = new Date().getFullYear();
 
 const linkClass = 'hover:text-text-inverse-muted';
@@ -76,47 +56,12 @@ const headingClass = 't-caption lg:t-label uppercase text-text-subtle';
           <a href={site.phone.href} class={linkClass}>{site.phone.display}</a>
         </address>
 
-        <ul class="flex flex-wrap items-center gap-xs" aria-label={t('footer.social')}>
-          {
-            socialLinks.map(({ network, label, href }) => {
-              const SocialIcon = socialIcons[network];
-              return (
-                <li>
-                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} class="block hover:opacity-80">
-                    <SocialIcon aria-hidden="true" />
-                  </a>
-                </li>
-              );
-            })
-          }
-        </ul>
+        <SocialLinks locale={locale} />
       </div>
 
       <div class="flex flex-col gap-sm">
         <p class="t-body-sm">{t('footer.askAi')}</p>
-        <ul class="flex items-center gap-xs">
-          {
-            aiLinks.map(({ assistant, label, href }) => (
-              <li>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${t('footer.askAiWith')} ${label}`}
-                  class="flex size-[2.75rem] items-center justify-center bg-bg-inverse-alt hover:bg-border-inverse"
-                >
-                  {assistant === 'chatgpt' ? (
-                    <span class="flex size-lg items-center justify-center">
-                      <ChatGpt aria-hidden="true" />
-                    </span>
-                  ) : (
-                    <Icon name={aiIcons[assistant]} class="size-lg" aria-hidden="true" />
-                  )}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+        <AiLinks locale={locale} prompt={footerAiPrompt[locale]} />
       </div>
     </div>
 
