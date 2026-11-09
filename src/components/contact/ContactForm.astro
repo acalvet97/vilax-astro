@@ -82,14 +82,14 @@ const emailLink = `<a href="mailto:${site.email}" class="underline">${site.email
 
     <div>
       <div class="flex items-start gap-xs">
-        <span class="relative mt-[0.0625rem] flex size-[0.875rem] shrink-0">
+        <span class="relative mt-3xs flex size-sm shrink-0">
           <input
             id="contact-privacy"
             name="privacy"
             type="checkbox"
             required
             aria-describedby="contact-privacy-error"
-            class="peer size-full cursor-pointer appearance-none border border-border-strong bg-bg checked:bg-text"
+            class="peer size-full cursor-pointer appearance-none border border-border bg-bg transition-colors duration-200 checked:bg-text focus:border-border-strong"
           />
           <Icon
             name="ri:check-line"
@@ -97,7 +97,7 @@ const emailLink = `<a href="mailto:${site.email}" class="underline">${site.email
             aria-hidden="true"
           />
         </span>
-        <label for="contact-privacy" class="t-caption text-text-muted">
+        <label for="contact-privacy" class="t-body-sm text-text-muted">
           {t('form.privacyBefore')}
           <a href={getRoutePath('privacy', locale)} class="underline hover:text-text">{t('form.privacyLink')}</a>
         </label>

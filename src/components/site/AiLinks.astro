@@ -1,13 +1,13 @@
 ---
 /**
- * "Ask AI" icon buttons. The button chrome is the same everywhere; pass the
- * question as `prompt` (the footer asks about VILAX, a post asks about the article).
+ * "Ask AI" links (Figma "AiTile"): inverse IconTiles. The tile is the same everywhere;
+ * pass the question as `prompt` (the footer asks about VILAX, a post asks about the article).
  * Destinations: getAiLinks() in src/config/site.ts.
  */
-import { Icon } from 'astro-icon/components';
 import { getAiLinks, type AiAssistant } from '../../config/site';
 import type { Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
+import IconTile from '../ui/IconTile.astro';
 
 type Props = { locale: Locale; prompt: string };
 
@@ -27,15 +27,7 @@ const icons: Record<AiAssistant, string> = {
   {
     links.map(({ assistant, label, href }) => (
       <li>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${t('footer.askAiWith')} ${label}`}
-          class="flex size-[2.5rem] items-center justify-center bg-bg-inverse-alt text-text-inverse hover:bg-border-inverse"
-        >
-          <Icon name={icons[assistant]} class="size-[1.2rem]" aria-hidden="true" />
-        </a>
+        <IconTile href={href} label={`${t('footer.askAiWith')} ${label}`} icon={icons[assistant]} tone="inverse" />
       </li>
     ))
   }

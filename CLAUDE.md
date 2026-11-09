@@ -12,7 +12,7 @@ Rebuild of **www.vilax.es** (today: WordPress + Elementor Pro + WPML + ACF + Yoa
 |---|---|
 | Production (reference) | https://www.vilax.es |
 | Headless WordPress (staging) | https://vilaxheadless.staging.vilax.es (GraphQL: `/graphql`) |
-| Figma | file `g5P0oB7Hi3HO2zHTx7bV11` ("VILAX WEB 2026"): page "Dissenys per maquetar · Sistema" (designs), "Components" (Header 1268:15098/15099, Footer 1428:1929 desktop / 1428:2348 mobile) |
+| Figma | file `g5P0oB7Hi3HO2zHTx7bV11` ("VILAX WEB 2026"): page "Dissenys per maquetar · Sistema" (designs); component library on "Components · Basics" (icons, Logo, Button, NavLink), "· Small parts" (LanguageSwitcher, Pill, PaginationItem, tiles, FormField, Checkbox), "· Combined parts", "· Sections" (Header 1268:15098/15099, Footer 1428:1929 desktop / 1428:2348 mobile — old versions, to be rebuilt from parts) |
 | Repo | github.com/acalvet97/vilax-astro (private). `main` = up to date (fast-forwarded from `setup/foundation` on 2026-11-09) |
 | Production header code | `wordpress/reference/production-header/` (reference only) |
 
@@ -50,9 +50,11 @@ src/
     content/        Prose (WordPress HTML, scoped :global styles)
     sections/       CtaBanner (dark band with dotted map; reusable), ClientLogos (rotating), FaqSection
     contact/        ContactForm, FormField, OfficeMap (Google Maps embed)
-    ui/             Button (primary; `surface` light/dark sets the hover colors; used by the header Contact
-                    button, CtaBanner and forms), FaqAccordion (shared by blog Faqs and FaqSection)
-    site/           AiLinks ("Ask AI" buttons, takes a prompt), SocialLinks
+    ui/             Button (Figma "Button": `variant` primary/secondary, `size` large/medium, `surface`
+                    light/dark; used by the header Contact (medium), CtaBanner and forms),
+                    FaqAccordion (shared by blog Faqs and FaqSection),
+                    IconTile (40px icon link, `tone` accent/inverse; used by SocialLinks and AiLinks)
+    site/           AiLinks ("Ask AI" tiles, takes a prompt), SocialLinks
     navigation/     MenuLink (one WP menu item → link)
     seo/            Seo (title, canonical, hreflang, OG, JSON-LD)
   lib/
@@ -121,6 +123,10 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
 
 ## Design decisions
 
+- **Figma is the visual source of truth**: no style in code that isn't in Figma (variables, `t-*` styles,
+  components). Agreed Figma decisions (2026-11-09): focus = hover look, no outline (custom `hover` variant in
+  `global.css`); form fields/checkbox: `border-border` at rest, `border-border-strong` on focus; hover
+  backgrounds use `bg-alt-hover` / `bg-inverse-alt-hover`; dimmed hover = `opacity-(--opacity-hover)`.
 - **Tokens** (`src/styles/tokens.css`): Figma variables collection, Geist font. Tailwind defaults are reset;
   `--spacing-0` exists so zero utilities (`inset-0`, `top-0`, `min-h-0`) are generated.
 - **Text styles**: always the project `t-*` utilities, no fluid type (production uses clamp(); Albert will
@@ -128,8 +134,8 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
 - **Layout**: `wrapper` = 1600px max content, gutter 1/2/4rem (mobile / ≥768px / ≥1025px); `lg` = 1025px;
   `--header-height` 80/85/90px (used by the header, drawer, sticky TOC and heading `scroll-margin-top`).
 - **Header** replicates **production** (not Figma): sticky; logo 108/124/135px; segmented language switcher
-  `ES · CA · EN`; Contact button with border-on-hover; dark by default, **light on blog pages**
-  (`headerSurface="light"`; colors in `header-theme.ts`). Mega menu: category tabs (hover/click/arrow keys),
+  `ES · CA · EN` (same height as the medium Contact button); dark by default (text `text-inverse`, as the
+  Figma Header), **light on blog pages** (`headerSurface="light"`; colors in `header-theme.ts`). Mega menu: category tabs (hover/click/arrow keys),
   services, "Ver …", 4:5 image with crop position from ACF. ≤1024px: left drawer with level navigation,
   "Volver", scroll lock, CTA "Hablemos de tu proyecto".
 - **Footer**: Figma design; service columns come from the `primary` menu's Servicios subtree + `footer` menu
@@ -190,7 +196,9 @@ npx astro build                      # build against WordPress (.env) — fails 
 
 Done (pushed to `setup/foundation`): foundation, header, footer, blog archive + article, CTA band, sticky TOC,
 `components/site/` (AiLinks with a `prompt` prop — `getAiLinks(locale, prompt)` + `footerAiPrompt`;
-SocialLinks with glyph-only SVGs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
+SocialLinks with Remix glyphs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
+Figma component library steps 1–2 done (Basics, Small parts) and code aligned with them
+(`chore/align-code-with-figma`).
 
 Pending in WordPress (Albert): real categories on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
 
