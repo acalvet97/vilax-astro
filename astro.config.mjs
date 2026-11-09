@@ -2,6 +2,7 @@
 import { defineConfig, envField, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
 import { linkCheck } from './src/integrations/link-check.ts';
 
@@ -12,6 +13,10 @@ export default defineConfig({
   site: 'https://www.vilax.es',
   trailingSlash: 'always',
   output: 'static',
+  // Every page is prerendered; the adapter only runs the Astro Actions
+  // (contact form) as a serverless function. Hosting isn't decided yet:
+  // switching to Cloudflare means replacing this with @astrojs/cloudflare.
+  adapter: vercel(),
 
   i18n: {
     defaultLocale: 'es',
@@ -33,6 +38,12 @@ export default defineConfig({
         context: 'server',
         access: 'secret',
         default: false,
+      }),
+      // Inbox that receives contact form submissions.
+      CONTACT_TO_EMAIL: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'vilax@vilax.es',
       }),
     },
   },

@@ -1,0 +1,88 @@
+---
+/**
+ * Contact page (Figma Contact_dk_v3, 2034:8559):
+ *   intro (eyebrow, title, lead) → contact details + form
+ *   client logos (rotating) → FAQs (+ FAQPage JSON-LD) → office map
+ * Copy: src/content/contact.ts; interface strings: src/i18n/ui.ts;
+ * address, phone, email and social links: src/config/site.ts.
+ */
+import ContactForm from '../components/contact/ContactForm.astro';
+import OfficeMap from '../components/contact/OfficeMap.astro';
+import ClientLogos from '../components/sections/ClientLogos.astro';
+import FaqSection from '../components/sections/FaqSection.astro';
+import SocialLinks from '../components/site/SocialLinks.astro';
+import { site } from '../config/site';
+import { contactContent } from '../content/contact';
+import type { Locale } from '../i18n/config';
+import { getRouteAlternates } from '../i18n/routes';
+import { useTranslations } from '../i18n/ui';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildFaqJsonLd } from '../lib/faq';
+
+type Props = { locale: Locale };
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const content = contactContent[locale];
+const faqSchema = buildFaqJsonLd(content.faq.items);
+
+const labelClass = 't-body-lg';
+const valueClass = 't-body-lg text-text-muted';
+---
+
+<BaseLayout
+  locale={locale}
+  title={content.seo.title}
+  description={content.seo.description}
+  alternates={getRouteAlternates('contact')}
+  headerSurface="light"
+>
+  {faqSchema && <script is:inline slot="head" type="application/ld+json" set:html={faqSchema} />}
+
+  <section class="wrapper flex flex-col gap-3xl pt-4xl pb-4xl lg:gap-2xl lg:pt-5xl lg:pb-7xl">
+    <div class="flex flex-col gap-xl">
+      <div class="flex flex-col gap-sm">
+        <p class="t-label uppercase text-text-subtle">{content.eyebrow}</p>
+        <h1 class="t-heading-xl md:t-display-sm lg:t-display-lg">{content.title}</h1>
+      </div>
+      <p class="t-body-lg max-w-[50.25rem] text-text-muted">{content.lead}</p>
+    </div>
+
+    <!-- Form first in the source (mobile order); on desktop the details sit on the left as in Figma. -->
+    <div
+      class="grid gap-4xl lg:grid-cols-[minmax(0,49.375rem)_minmax(0,32.5rem)] lg:justify-between lg:gap-x-2xl"
+    >
+      <ContactForm locale={locale} class="lg:col-start-2 lg:row-start-1" />
+
+      <div class="flex flex-col gap-2xl lg:col-start-1 lg:row-start-1">
+        <div class="flex flex-col gap-sm">
+          <p class={labelClass}>{t('contact.office')}</p>
+          <address class:list={[valueClass, 'not-italic']}>{site.address[0]}<br />{site.address[1]}</address>
+        </div>
+        <div class="flex flex-col gap-sm">
+          <p class={labelClass}>{t('contact.phone')}</p>
+          <a href={site.phone.href} class:list={[valueClass, 'self-start hover:text-text']}>{site.phone.display}</a>
+        </div>
+        <div class="flex flex-col gap-sm">
+          <p class={labelClass}>{t('contact.email')}</p>
+          <a href={`mailto:${site.email}`} class:list={[valueClass, 'self-start hover:text-text']}>{site.email}</a>
+        </div>
+        <div class="flex flex-col gap-sm">
+          <p class={labelClass}>{t('contact.follow')}</p>
+          <SocialLinks locale={locale} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ClientLogos locale={locale} />
+
+  <FaqSection
+    eyebrow={content.faq.eyebrow}
+    title={content.faq.title}
+    items={content.faq.items}
+    cta={{ label: content.faq.cta, href: '#contact-form' }}
+  />
+
+  <OfficeMap locale={locale} class="pb-4xl lg:pb-7xl" />
+</BaseLayout>

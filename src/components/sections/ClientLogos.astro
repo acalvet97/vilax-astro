@@ -1,0 +1,67 @@
+---
+/**
+ * Client logos band (Figma Contact_dk_v3 → "Ya confían en VILAX", 2034:8658).
+ * Four slots; one at a time, a logo fades out and a logo that isn't on screen
+ * fades in (src/scripts/logo-rotator.ts). With reduced motion, or four logos
+ * or fewer, the first four stay put.
+ *
+ * Logos not on screen are rendered inside a <template>: optimized at build
+ * time, but the browser only downloads them when they rotate in.
+ * Screen readers get the full client list once instead of the rotation.
+ */
+import { Image } from 'astro:assets';
+import { clients } from '../../content/clients';
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+
+type Props = { locale: Locale; class?: string };
+
+const { locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+
+const SLOTS = 4;
+const visible = clients.slice(0, SLOTS);
+const pool = clients.slice(SLOTS);
+
+// Every logo shares the same 2560×765 canvas, so a fixed width keeps them even.
+const logoProps = {
+  widths: [252, 504],
+  sizes: '(min-width: 64.0625rem) 252px, 36vw',
+  class: 'h-auto w-[80%] max-w-[15.75rem] transition-opacity duration-800 ease-in-out motion-reduce:transition-none',
+};
+---
+
+<section class:list={['wrapper', className]}>
+  <div class="flex flex-col gap-xl bg-bg-inverse px-lg py-lg lg:px-2xl">
+    <p class="t-label uppercase text-text-subtle">{t('clients.eyebrow')}</p>
+
+    <ul class="sr-only" aria-label={t('clients.list')}>
+      {clients.map((client) => <li>{client.name}</li>)}
+    </ul>
+
+    <div data-logo-rotator aria-hidden="true">
+      <ul class="grid grid-cols-2 gap-lg lg:grid-cols-4 lg:px-3xl">
+        {
+          visible.map((client) => (
+            <li data-logo-slot class="flex items-center justify-center">
+              <Image src={client.logo} alt="" {...logoProps} />
+            </li>
+          ))
+        }
+      </ul>
+      {
+        pool.length > 0 && (
+          <template data-logo-pool>
+            {pool.map((client) => (
+              <Image src={client.logo} alt="" loading="eager" {...logoProps} />
+            ))}
+          </template>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/logo-rotator';
+</script>

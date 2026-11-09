@@ -1,0 +1,133 @@
+---
+/**
+ * Contact form (Figma "Formulario", 2034:8593). The page is static: the script
+ * (src/scripts/contact-form.ts) validates with localized messages and sends the
+ * form to the `contact` Astro Action (src/actions/index.ts).
+ * Bots: a hidden honeypot field (add a captcha later only if spam shows up).
+ */
+import { Icon } from 'astro-icon/components';
+import { site } from '../../config/site';
+import type { Locale } from '../../i18n/config';
+import { getRoutePath } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+import Button from '../ui/Button.astro';
+import FormField from './FormField.astro';
+
+type Props = { locale: Locale; class?: string };
+
+const { locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+const emailLink = `<a href="mailto:${site.email}" class="underline">${site.email}</a>`;
+---
+
+<div
+  id="contact-form"
+  class:list={['scroll-mt-[calc(var(--header-height)+var(--spacing-xl))]', className]}
+>
+  <form data-contact-form class="flex flex-col gap-2xl">
+    <input type="hidden" name="locale" value={locale} />
+
+    <FormField
+      name="name"
+      label={t('form.name')}
+      placeholder={t('form.namePlaceholder')}
+      autocomplete="name"
+      required
+      maxlength={200}
+      error={t('form.errorName')}
+    />
+    <FormField
+      name="email"
+      type="email"
+      label={t('form.email')}
+      placeholder={t('form.emailPlaceholder')}
+      autocomplete="email"
+      required
+      maxlength={254}
+      error={t('form.errorEmail')}
+    />
+    <FormField
+      name="phone"
+      type="tel"
+      label={t('form.phone')}
+      placeholder={t('form.phonePlaceholder')}
+      autocomplete="tel"
+      maxlength={50}
+      error={t('form.errorField')}
+    />
+    <FormField
+      name="company"
+      label={t('form.company')}
+      placeholder={t('form.companyPlaceholder')}
+      autocomplete="organization"
+      maxlength={200}
+      error={t('form.errorField')}
+    />
+    <FormField
+      name="message"
+      label={t('form.message')}
+      placeholder={t('form.messagePlaceholder')}
+      multiline
+      required
+      minlength={10}
+      maxlength={5000}
+      error={t('form.errorMessage')}
+    />
+
+    <!-- Honeypot: hidden from people and assistive tech; bots tend to fill it. -->
+    <div class="sr-only" aria-hidden="true">
+      <label for="contact-website">{t('form.honeypot')}</label>
+      <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div>
+      <div class="flex items-start gap-xs">
+        <span class="relative mt-[0.0625rem] flex size-[0.875rem] shrink-0">
+          <input
+            id="contact-privacy"
+            name="privacy"
+            type="checkbox"
+            required
+            aria-describedby="contact-privacy-error"
+            class="peer size-full cursor-pointer appearance-none border border-border-strong bg-bg checked:bg-text"
+          />
+          <Icon
+            name="ri:check-line"
+            class="pointer-events-none absolute inset-0 size-full text-text-inverse opacity-0 peer-checked:opacity-100"
+            aria-hidden="true"
+          />
+        </span>
+        <label for="contact-privacy" class="t-caption text-text-muted">
+          {t('form.privacyBefore')}
+          <a href={getRoutePath('privacy', locale)} class="underline hover:text-text">{t('form.privacyLink')}</a>
+        </label>
+      </div>
+      <p id="contact-privacy-error" data-field-error="privacy" class="t-caption mt-2xs flex items-center gap-3xs" hidden>
+        <Icon name="ri:error-warning-line" class="size-sm shrink-0" aria-hidden="true" />
+        <span>{t('form.errorPrivacy')}</span>
+      </p>
+    </div>
+
+    <div class="flex flex-col items-start">
+      <Button type="submit" data-busy-label={t('form.sending')}>
+        <span data-submit-label>{t('form.submit')}</span>
+      </Button>
+      <p data-form-error role="alert" class="t-caption mt-sm" hidden>
+        {t('form.errorGeneral')} <Fragment set:html={emailLink} />.
+      </p>
+    </div>
+
+    <noscript>
+      <p class="t-caption">{t('form.noscript')} <Fragment set:html={emailLink} />.</p>
+    </noscript>
+  </form>
+
+  <div data-form-success role="status" tabindex="-1" class="flex flex-col gap-sm border border-border-strong p-xl" hidden>
+    <p class="t-heading-sm">{t('form.successTitle')}</p>
+    <p class="t-body-md text-text-muted">{t('form.successText')}</p>
+  </div>
+</div>
+
+<script>
+  import '../../scripts/contact-form';
+</script>

@@ -18,7 +18,7 @@ import { getRoutePath } from '../i18n/routes';
 import { formatDate, useTranslations } from '../i18n/ui';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPostCategories, toPostCard, type PostProps } from '../lib/blog';
-import { stripHtml } from '../lib/wp/normalize';
+import { buildFaqJsonLd } from '../lib/faq';
 
 type Props = Omit<PostProps, 'template'>;
 
@@ -32,18 +32,7 @@ const [card, categories, relatedCards] = await Promise.all([
   Promise.all(related.map(toPostCard)),
 ]);
 
-const faqSchema =
-  data.faqs.length > 0
-    ? JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: data.faqs.map((f) => ({
-          '@type': 'Question',
-          name: f.question,
-          acceptedAnswer: { '@type': 'Answer', text: stripHtml(f.answer) },
-        })),
-      })
-    : undefined;
+const faqSchema = buildFaqJsonLd(data.faqs);
 ---
 
 <BaseLayout

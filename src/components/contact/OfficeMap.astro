@@ -1,0 +1,54 @@
+---
+/**
+ * Office map (Figma Contact_dk_v3 → grey block "Rectangle 48", 2034:8657).
+ * Click-to-load: nothing is requested from Google until the visitor clicks
+ * "Ver mapa" (no cookies or third-party requests on page load). The embed
+ * needs no API key.
+ */
+import { Icon } from 'astro-icon/components';
+import { site } from '../../config/site';
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import Button from '../ui/Button.astro';
+
+type Props = { locale: Locale; class?: string };
+
+const { locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+
+const query = encodeURIComponent(`${site.name}, ${site.address.join(' ')}`);
+const embedSrc = `https://maps.google.com/maps?q=${query}&z=16&hl=${locale}&output=embed`;
+const openHref = `https://www.google.com/maps/search/?api=1&query=${query}`;
+---
+
+<section class:list={['wrapper', className]}>
+  <div
+    data-office-map
+    data-src={embedSrc}
+    data-title={t('map.title')}
+    class="relative flex aspect-[4/3] flex-col items-center justify-center gap-lg bg-bg-alt p-xl text-center md:aspect-auto md:h-[33.5rem]"
+  >
+    <Icon name="ri:map-pin-2-line" class="size-xl" aria-hidden="true" />
+    <address class="t-body-lg not-italic">{site.address[0]} {site.address[1]}</address>
+    <Button data-map-load>{t('map.load')}</Button>
+    <p class="t-caption text-text-muted">
+      {t('map.notice')}
+      <a href={openHref} target="_blank" rel="noopener noreferrer" class="underline hover:text-text">{t('map.open')}</a>
+    </p>
+  </div>
+</section>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-office-map]')) {
+    box.querySelector('[data-map-load]')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = box.dataset.src ?? '';
+      iframe.title = box.dataset.title ?? '';
+      iframe.className = 'absolute inset-0 size-full border-0';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.allowFullscreen = true;
+      box.replaceChildren(iframe);
+      iframe.focus();
+    });
+  }
+</script>
