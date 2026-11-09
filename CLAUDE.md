@@ -192,8 +192,7 @@ Done (pushed to `setup/foundation`): foundation, header, footer, blog archive + 
 `components/site/` (AiLinks with a `prompt` prop — `getAiLinks(locale, prompt)` + `footerAiPrompt`;
 SocialLinks with glyph-only SVGs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
 
-Pending in WordPress (Albert): mega-menu images (ACF) on the CA and EN primary menu items, real categories
-on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
+Pending in WordPress (Albert): real categories on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
 
 Next steps:
 1. Blog: author pages (wait for Figma) or temporary redirects of `/author/…`; RSS feed (`/feed/`,
