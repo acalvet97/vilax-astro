@@ -88,8 +88,8 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
   host); Yoast canonical ignored (canonical comes from the Astro URL); Yoast JSON-LD URLs rewritten;
   `<h2>` get ids + TOC list; reading time (~200 wpm); entities decoded; menu URLs normalized (internal hosts →
   relative path with trailing slash; a host without a dot, e.g. `http://ca/…`, fails the build).
-- **Failure policy**: GraphQL errors or an empty menu location in any locale fail `astro build`. In
-  `astro dev` only, a missing menu falls back to its mock with a warning.
+- **Failure policy**: GraphQL errors or an empty menu location in any locale fail `astro build` and
+  `astro dev` (no per-menu mock fallback; mocks are only used when the whole source is `mock`).
 - **WPML**: language codes `es`, `ca`, **`en-us`** (English URL dir is still `/en/`); mapping in
   `src/i18n/config.ts` (`wpmlCodes`, `localeFromWpml`). Queries filter with `where: { language }`.
 - **GraphQL names Astro depends on** (details in `docs/wordpress-acf.md`):
@@ -192,8 +192,8 @@ Done (pushed to `setup/foundation`): foundation, header, footer, blog archive + 
 `components/site/` (AiLinks with a `prompt` prop — `getAiLinks(locale, prompt)` + `footerAiPrompt`;
 SocialLinks with glyph-only SVGs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
 
-Pending in WordPress (Albert): primary menu in CA and EN (blocks the full build), real categories on the
-test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
+Pending in WordPress (Albert): mega-menu images (ACF) on the CA and EN primary menu items, real categories
+on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
 
 Next steps:
 1. Blog: author pages (wait for Figma) or temporary redirects of `/author/…`; RSS feed (`/feed/`,
