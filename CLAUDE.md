@@ -38,14 +38,19 @@ WordPress manages **only** blog posts, authors, categories, case studies (future
 ```
 src/
   pages/            index.astro, ca/index.astro, en/index.astro (Home placeholder)
+                    contacto.astro, ca/contacte.astro, en/contact.astro
                     [...path].astro → every WordPress-driven blog URL (see lib/blog.ts)
-  templates/        HomePage (placeholder), BlogArchive, BlogPost
+  templates/        HomePage (placeholder), ContactPage, BlogArchive, BlogPost
+  actions/          index.ts → Astro Actions (`contact`; the only on-demand code)
+  content/          Astro-owned copy: contact.ts (Contact page per locale), clients.ts (client logos)
   layouts/          BaseLayout (fonts, <Seo>, Header, <main>, Footer; head slot; headerSurface prop)
   components/
     layout/         Header, MegaMenu, MobileDrawer, LanguageSwitcher, Logo, Footer, header-theme.ts
     blog/           PostCard, AuthorByline, TableOfContents, Faqs, TagList, Pagination
     content/        Prose (WordPress HTML, scoped :global styles)
-    sections/       CtaBanner (dark band with dotted map; reusable)
+    sections/       CtaBanner (dark band with dotted map; reusable), ClientLogos (rotating), FaqSection
+    contact/        ContactForm, FormField, OfficeMap (Google Maps embed)
+    ui/             Button (primary), FaqAccordion (shared by blog Faqs and FaqSection)
     site/           AiLinks ("Ask AI" buttons, takes a prompt), SocialLinks
     navigation/     MenuLink (one WP menu item → link)
     seo/            Seo (title, canonical, hreflang, OG, JSON-LD)
@@ -53,12 +58,14 @@ src/
     wp/             client.ts (GraphQL), queries.ts, normalize.ts, loaders.ts, source.ts, mocks/
     blog.ts         blog queries + getBlogPaths()
     navigation.ts   getMenu(), isMegaItem(), getServiceGroups()
+    faq.ts          FaqItem + buildFaqJsonLd() (FAQPage JSON-LD)
+    contact/        notify.ts (notification email; provider pending)
   i18n/             config.ts (locales, WPML codes), routes.ts (route map), ui.ts (UI strings, default copy)
   config/site.ts    address, email, phone, social links, "Ask AI" prompt + getAiLinks()
-  scripts/header.ts header interactions (mega menu, tabs, drawer)
+  scripts/          header.ts (mega menu, tabs, drawer), logo-rotator.ts, contact-form.ts
   styles/           tokens.css (Figma variables), global.css (wrapper, --gutter, --header-height)
   integrations/     link-check.ts (broken internal links after build; warn-only for now)
-  assets/           brand/ (production logo PNGs), decor/map-dots.svg
+  assets/           brand/ (production logo PNGs), clients/ (production client logos), decor/map-dots.svg
 wordpress/
   mu-plugins/vilax-headless.php   installed on the WP server (wp-content/mu-plugins/)
   acf-json/                       exports of the ACF groups Astro depends on (import in ACF → Tools)
@@ -132,6 +139,13 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
   FAQ accordion + `FAQPage` JSON-LD, **CtaBanner** (copy per article from ACF "CTA", default copy `cta.*` in
   `ui.ts` when empty; button fixed → Contact), related insights (same category first). No featured images.
 - **CtaBanner** is shared: articles (and cases later) pass ACF copy; Astro pages will pass their own copy.
+- **Contact** (Figma Contact_dk_v3 2034:8559): pages stay static; the form posts to the `contact` Astro Action
+  (adapter `@astrojs/vercel` for now — hosting not decided, Cloudflare = swap the adapter). Kept simple on
+  purpose: honeypot + server validation only, no captcha until spam shows up. Email provider not chosen:
+  `lib/contact/notify.ts` prints to the terminal in dev and fails (form shows the email address) in production.
+  Client logos: 10 production PNGs, 4 slots, slots change in shuffled rounds every 2s (800ms fades; static
+  with reduced motion).
+  FAQs: production ES copy, CA/EN translated (pending review). Map: lazy-loaded Google Maps embed.
 - **Images**: WP media optimized at build (`image.domains`: staging host + `www.vilax.es`); Gravatar via
   `remotePatterns`. Logos are production PNGs (TODO: SVG). `map-dots.svg` is the Figma dots layer only.
 
@@ -158,6 +172,10 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
 - Adding a field to a GraphQL query before it exists in WP breaks `npm run dev` with real data: ask Albert to
   create/import the ACF group first, then verify on staging.
 - Brave/Chrome headless screenshots fail here (no display); `astro preview` works for HTML checks.
+- Astro registers Actions only if `src/actions/` exists when the dev server starts: restart it after
+  creating that folder (otherwise `/_actions/*` returns 404). The Vercel adapter doesn't support `astro preview`;
+  test the built function by importing `.vercel/output/functions/_render.func/.vercel/output/server/entry.mjs`
+  and calling its `fetch(request)`.
 
 ## Commands
 

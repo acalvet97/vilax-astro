@@ -1,0 +1,41 @@
+---
+/**
+ * FAQ section for Astro-owned pages (Figma "Service_FAQs", 2034:8625): eyebrow,
+ * title and an optional CTA on the left; the shared accordion on the right.
+ * Copy comes from each page's content in src/content/. The page adds the
+ * FAQPage JSON-LD (buildFaqJsonLd in src/lib/faq.ts).
+ */
+import type { FaqItem } from '../../lib/faq';
+import Button from '../ui/Button.astro';
+import FaqAccordion from '../ui/FaqAccordion.astro';
+
+type Props = {
+  eyebrow: string;
+  title: string;
+  items: FaqItem[];
+  cta?: { label: string; href: string };
+  class?: string;
+};
+
+const { eyebrow, title, items, cta, class: className } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section
+      aria-labelledby="faq-section-title"
+      class:list={['wrapper grid gap-2xl py-4xl lg:grid-cols-2 lg:gap-md lg:py-7xl', className]}
+    >
+      <div class="flex flex-col items-start gap-2xl">
+        <div class="flex max-w-[40.125rem] flex-col gap-sm">
+          <p class="t-label uppercase text-text-subtle">{eyebrow}</p>
+          <h2 id="faq-section-title" class="t-heading-lg lg:t-heading-xl">
+            {title}
+          </h2>
+        </div>
+        {cta && <Button href={cta.href}>{cta.label}</Button>}
+      </div>
+      <FaqAccordion items={items} surface="base" />
+    </section>
+  )
+}

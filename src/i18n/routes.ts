@@ -11,6 +11,7 @@ export const routes = {
   home: { es: '', ca: '', en: '' },
   about: { es: 'sobre-nosotros', ca: 'sobre-nosaltres', en: 'about-us' },
   contact: { es: 'contacto', ca: 'contacte', en: 'contact' },
+  privacy: { es: 'politica-de-privacidad', ca: 'politica-de-privadesa', en: 'privacy-policy' },
   // WordPress-driven sections (bases for archives and singles)
   blog: { es: 'insights', ca: 'insights', en: 'insights' },
   category: { es: 'category', ca: 'category', en: 'category' },

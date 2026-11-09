@@ -1,0 +1,29 @@
+---
+/**
+ * Office map (Figma Contact_dk_v3 → grey block "Rectangle 48", 2034:8657).
+ * Google Maps embed (no API key needed), lazy-loaded: the browser only fetches
+ * it when the visitor scrolls near it.
+ */
+import { site } from '../../config/site';
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+
+type Props = { locale: Locale; class?: string };
+
+const { locale, class: className } = Astro.props;
+const t = useTranslations(locale);
+
+const query = encodeURIComponent(`${site.name}, ${site.address.join(' ')}`);
+const embedSrc = `https://maps.google.com/maps?q=${query}&z=16&hl=${locale}&output=embed`;
+---
+
+<section class:list={['wrapper', className]}>
+  <iframe
+    src={embedSrc}
+    title={t('map.title')}
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    allowfullscreen
+    class="block aspect-[4/3] w-full border-0 bg-bg-alt md:aspect-auto md:h-[33.5rem]"
+  ></iframe>
+</section>

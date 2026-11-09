@@ -1,15 +1,15 @@
 ---
 /**
- * FAQs accordion (Figma "FAQs", 2034:714). Native <details>/<summary>:
- * accessible and works without JavaScript. The first question starts open,
- * as in the design.
+ * Blog article FAQs (Figma "FAQs", 2034:714): grey box with the "FAQs" heading
+ * and the shared accordion. Items come from the ACF repeater.
  */
-import { Icon } from 'astro-icon/components';
 import type { Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
+import type { FaqItem } from '../../lib/faq';
+import FaqAccordion from '../ui/FaqAccordion.astro';
 
 type Props = {
-  items: Array<{ question: string; answer: string }>;
+  items: FaqItem[];
   locale: Locale;
   class?: string;
 };
@@ -24,20 +24,7 @@ const t = useTranslations(locale);
       <h2 id="faqs-title" class="t-heading-lg lg:t-heading-xl">
         {t('blog.faqs')}
       </h2>
-      <div>
-        {items.map((item, i) => (
-          <details class="group border-b border-border py-xl" open={i === 0}>
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-md [&::-webkit-details-marker]:hidden">
-              <h3 class="t-heading-sm">{item.question}</h3>
-              <span class="flex size-[2.25rem] shrink-0 items-center justify-center bg-bg" aria-hidden="true">
-                <Icon name="ri:add-fill" class="size-sm group-open:hidden" />
-                <Icon name="ri:subtract-fill" class="hidden size-sm group-open:block" />
-              </span>
-            </summary>
-            <div class="t-body-lg mt-xl [&_a]:underline [&_p+p]:mt-sm" set:html={item.answer} />
-          </details>
-        ))}
-      </div>
+      <FaqAccordion items={items} surface="alt" />
     </section>
   )
 }
