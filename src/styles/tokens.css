@@ -12,8 +12,9 @@
  * Tailwind's default palette, spacing scale and type scale are reset on purpose:
  * only design-system values exist. Use an arbitrary value ([…]) only for true one-offs.
  *
- * Source pages checked: Home v4, Blog article, Sub-service, About.
- * TODO: compare against a full export of the Figma variables collection.
+ * Checked against a full export of the Figma variables (2026-11-09). Not mirrored yet:
+ * the Mobile modes of Tipografía/Espaciado and layout-gutter (pending decision), and the
+ * unused font weights light/medium/bold.
  */
 
 @theme {
@@ -68,6 +69,9 @@
   --color-bg-highlight: #fffcec;
   --color-bg-inverse: #040404;
   --color-bg-inverse-alt: #2c2c2c;
+  /* Hover backgrounds of elements sitting on bg-alt / bg-inverse-alt (pills, Ask-AI tiles). */
+  --color-bg-alt-hover: #d7d7d7;
+  --color-bg-inverse-alt-hover: #414141;
 
   /* ---------- Color: accent ---------- */
   --color-accent: #ffe843;
@@ -108,10 +112,13 @@
 /*
  * Border widths (Figma --border-width-*). Tailwind has no theme namespace for
  * these: use `border` (1px = default) and `border-4` (= thick).
+ * Opacity (Figma collection "Opacidad"): no theme namespace either; use
+ * `opacity-(--opacity-hover)`.
  */
 :root {
   --border-width-default: 1px;
   --border-width-thick: 4px;
+  --opacity-hover: 0.8;
 }
 
 /* ---------- Text styles (Figma t-*) ---------- */

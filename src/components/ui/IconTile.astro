@@ -1,0 +1,36 @@
+---
+/**
+ * Square icon link (Figma "SocialTile" / "AiTile"): 2.5rem tile, 1.2rem Remix icon.
+ * Tiles share size and layout; only the colors change with `tone`:
+ *  - accent:  accent tile, dims on hover (opacity-hover) — social profiles
+ *  - inverse: dark tile for dark surfaces, lighter background on hover — "Ask AI"
+ * External links open in a new tab.
+ */
+import { Icon } from 'astro-icon/components';
+
+type Props = {
+  href: string;
+  /** Accessible name (the tile has no visible text). */
+  label: string;
+  /** Remix icon name, e.g. "ri:linkedin-fill". */
+  icon: string;
+  tone: 'accent' | 'inverse';
+};
+
+const { href, label, icon, tone } = Astro.props;
+
+const tones = {
+  accent: 'bg-accent text-text-on-accent hover:opacity-(--opacity-hover)',
+  inverse: 'bg-bg-inverse-alt text-text-inverse hover:bg-bg-inverse-alt-hover',
+};
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={label}
+  class:list={['flex size-[2.5rem] items-center justify-center transition duration-200', tones[tone]]}
+>
+  <Icon name={icon} class="size-[1.2rem]" aria-hidden="true" />
+</a>

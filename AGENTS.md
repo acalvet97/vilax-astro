@@ -15,8 +15,10 @@ Languages: `es` (root), `ca` (`/ca/`), `en` (`/en/`), with translated slugs.
   The Figma "Estils" page is legacy.
 - **Styling**: Tailwind classes in components. Scoped `<style>` only where markup can't take classes
   (e.g. WordPress HTML in `src/components/content/Prose.astro`, using `:global()` + `var(--…)` tokens).
-- **Icons**: Remix Icon via `astro-icon` (`<Icon name="ri:arrow-right-line" />`); brand SVGs in `src/icons/`
-  imported as components.
+- **Icons**: Remix Icon only, via `astro-icon` (`<Icon name="ri:arrow-right-line" />`), brand/social icons
+  included (`ri:linkedin-fill`…). No custom SVG icon files. In Figma they are the `Icon/<name>` components.
+- **Focus**: no focus outline. Every `hover:` utility also applies on `:focus-visible` (custom `hover` variant
+  in `global.css`), so keyboard focus looks like hover; form fields switch to `border-border-strong` on focus.
 - **i18n**: never hard-code localized URLs. Use `src/i18n/routes.ts` (route map, `getRoutePath`,
   `buildPath`), UI strings in `src/i18n/ui.ts`, WPML codes in `src/i18n/config.ts` (`en` = `en-us` in WPML).
 - **WordPress data** (`src/lib/wp/`): fetched at build time through Content Layer loaders

@@ -1,7 +1,8 @@
 ---
 /**
- * Form field with the label sitting on the top border (Figma "Formulario",
- * 2034:8593). The error message stays hidden until the form script
+ * Form field with the label sitting on the top border (Figma "FormField";
+ * design "Formulario", 2034:8593). Light border at rest, strong border on focus
+ * (no outline). The error message stays hidden until the form script
  * (src/scripts/contact-form.ts) shows it.
  */
 import { Icon } from 'astro-icon/components';
@@ -23,7 +24,7 @@ const { name, label, error, type = 'text', multiline = false, ...attrs } = Astro
 const id = `contact-${name}`;
 const errorId = `${id}-error`;
 const fieldClass =
-  't-body-md block w-full border border-border-strong bg-bg px-xl py-sm text-text placeholder:text-text-subtle';
+  't-body-md block w-full border border-border bg-bg px-xl py-sm text-text transition-colors duration-200 placeholder:text-text-subtle focus:border-border-strong';
 ---
 
 <div>

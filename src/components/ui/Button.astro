@@ -1,25 +1,50 @@
 ---
 /**
- * Primary button (Figma "hero__main--button-primary"): accent fill; on hover,
- * transparent with a border in the main text color of the surface it sits on
- * (`surface`: light = page background, dark = inverse background).
+ * Button (Figma component "Button" on "Components · Basics").
+ *  - variant: primary = accent fill; on hover, transparent with a border in the text color
+ *             of the surface. secondary = transparent with that border; on hover, filled
+ *             with its border color.
+ *  - size: large (space-sm / space-xl: hero, CTA band, forms) or medium
+ *          (space-xs / space-lg: header Contact, "Ver todos").
+ *  - surface: background the button sits on (light page / dark inverse band).
+ * The 1px border is an inset ring (like Figma's inside stroke), so it doesn't add height.
  * Renders <a> with `href`, otherwise <button> (`type="button"` unless `type` is given).
  */
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = { surface?: 'light' | 'dark' } & (
-  | (HTMLAttributes<'a'> & { href: string })
-  | (HTMLAttributes<'button'> & { href?: undefined })
-);
+type Props = {
+  variant?: 'primary' | 'secondary';
+  size?: 'large' | 'medium';
+  surface?: 'light' | 'dark';
+} & ((HTMLAttributes<'a'> & { href: string }) | (HTMLAttributes<'button'> & { href?: undefined }));
 
 // `type` is taken out so the <button> renders a single type attribute
 // (with a duplicate, browsers keep the first one).
-const { surface = 'light', class: className, href, type, ...attrs } = Astro.props;
+const {
+  variant = 'primary',
+  size = 'large',
+  surface = 'light',
+  class: className,
+  href,
+  type,
+  ...attrs
+} = Astro.props;
+
+const looks = {
+  primary: {
+    light: 'bg-accent inset-ring-accent text-text-on-accent hover:bg-transparent hover:inset-ring-border-strong hover:text-text',
+    dark: 'bg-accent inset-ring-accent text-text-on-accent hover:bg-transparent hover:inset-ring-border-inverse-strong hover:text-text-inverse',
+  },
+  secondary: {
+    light: 'bg-transparent inset-ring-border-strong text-text hover:bg-border-strong hover:text-text-inverse',
+    dark: 'bg-transparent inset-ring-border-inverse-strong text-text-inverse hover:bg-border-inverse-strong hover:text-text',
+  },
+};
+
 const classes = [
-  't-label inline-flex items-center justify-center border border-accent bg-accent px-xl py-sm uppercase text-text-on-accent transition-colors duration-300 hover:bg-transparent disabled:pointer-events-none disabled:opacity-60',
-  surface === 'dark'
-    ? 'hover:border-text-inverse-muted hover:text-text-inverse-muted'
-    : 'hover:border-text hover:text-text',
+  't-label inline-flex items-center justify-center uppercase inset-ring transition-colors duration-300 disabled:pointer-events-none',
+  size === 'large' ? 'px-xl py-sm' : 'px-lg py-xs',
+  looks[variant][surface],
   className,
 ];
 ---

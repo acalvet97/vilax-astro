@@ -1,8 +1,9 @@
 ---
 /**
  * Language switcher, segmented as in production ("ES · CA · EN", all visible,
- * current one highlighted). Links to the current page's translation when it
- * exists, otherwise to the home page of that language.
+ * current one highlighted; Figma "LanguageSwitcher"). Links to the current page's
+ * translation when it exists, otherwise to the home page of that language.
+ * Its height equals Button size="medium", so they line up in the header.
  */
 import { localeMeta, locales, type Locale } from '../../i18n/config';
 import { getRoutePath, type Alternate } from '../../i18n/routes';
@@ -30,7 +31,7 @@ const options = locales.map((l) => ({
 <ul
   aria-label={t('nav.language')}
   class:list={[
-    'flex min-h-[calc(var(--spacing-xl)+1.2*var(--text-md)+2px)] gap-[2px] p-3xs',
+    'flex gap-3xs p-3xs',
     dark ? 'bg-bg-inverse-alt' : 'bg-bg-alt',
     className,
   ]}

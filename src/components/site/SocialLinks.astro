@@ -1,50 +1,34 @@
 ---
 /**
- * Social profile links. Destinations and order: src/config/site.ts.
- * Each link is a 2.5rem accent tile; the glyph is 1rem.
+ * Social profile links (Figma "SocialTile"): accent IconTiles with Remix icons.
+ * Destinations and order: src/config/site.ts.
  */
 import { socialLinks, type SocialNetwork } from '../../config/site';
 import type { Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import Behance from '../../icons/social/behance.svg';
-import Facebook from '../../icons/social/facebook.svg';
-import Instagram from '../../icons/social/instagram.svg';
-import Linkedin from '../../icons/social/linkedin.svg';
-import Tiktok from '../../icons/social/tiktok.svg';
-import Youtube from '../../icons/social/youtube.svg';
+import IconTile from '../ui/IconTile.astro';
 
 type Props = { locale: Locale };
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const icons: Record<SocialNetwork, typeof Linkedin> = {
-  linkedin: Linkedin,
-  instagram: Instagram,
-  facebook: Facebook,
-  tiktok: Tiktok,
-  behance: Behance,
-  youtube: Youtube,
+const icons: Record<SocialNetwork, string> = {
+  linkedin: 'ri:linkedin-fill',
+  instagram: 'ri:instagram-line',
+  facebook: 'ri:facebook-fill',
+  tiktok: 'ri:tiktok-fill',
+  behance: 'ri:behance-fill',
+  youtube: 'ri:youtube-fill',
 };
 ---
 
 <ul class="flex flex-wrap items-center gap-xs" aria-label={t('footer.social')}>
   {
-    socialLinks.map(({ network, label, href }) => {
-      const SocialIcon = icons[network];
-      return (
-        <li>
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={label}
-            class="flex size-[2.5rem] items-center justify-center bg-accent text-text hover:opacity-80"
-          >
-            <SocialIcon class="size-sm" aria-hidden="true" />
-          </a>
-        </li>
-      );
-    })
+    socialLinks.map(({ network, label, href }) => (
+      <li>
+        <IconTile href={href} label={label} icon={icons[network]} tone="accent" />
+      </li>
+    ))
   }
 </ul>

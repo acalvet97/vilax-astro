@@ -26,7 +26,7 @@ const { items, uppercase = false, label } = Astro.props;
             class:list={[
               't-caption inline-flex items-center rounded-full px-sm py-2xs',
               uppercase && 'uppercase',
-              item.current ? 'bg-accent text-text-on-accent' : 'bg-bg-alt hover:bg-border',
+              item.current ? 'bg-accent text-text-on-accent' : 'bg-bg-alt hover:bg-bg-alt-hover',
             ]}
           >
             {item.label}

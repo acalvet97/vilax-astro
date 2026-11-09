@@ -2,6 +2,22 @@
 @import "./tokens.css";
 
 /*
+ * Keyboard focus looks like hover (Figma rule: no focus outline). Every `hover:`
+ * utility also applies on :focus-visible, so components don't repeat
+ * `focus-visible:` classes. Mouse hover stays limited to devices that can hover.
+ */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &:focus-visible {
+    @slot;
+  }
+}
+
+/*
  * Page wrapper: content is at most 1600px wide and centered, with side
  * padding (gutter) of 1rem on mobile, 2rem on tablet and 4rem on desktop
  * (same as the production site). Full-bleed backgrounds go on an outer
@@ -46,8 +62,9 @@
     @apply t-body-sm;
   }
 
+  /* No focus outline: focus shows as the hover look (see the `hover` variant above);
+     form fields change their border color on focus. */
   :focus-visible {
-    outline: 2px solid var(--color-text);
-    outline-offset: 2px;
+    outline: none;
   }
 }
