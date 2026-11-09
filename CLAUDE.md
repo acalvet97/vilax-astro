@@ -12,7 +12,7 @@ Rebuild of **www.vilax.es** (today: WordPress + Elementor Pro + WPML + ACF + Yoa
 |---|---|
 | Production (reference) | https://www.vilax.es |
 | Headless WordPress (staging) | https://vilaxheadless.staging.vilax.es (GraphQL: `/graphql`) |
-| Figma | file `g5P0oB7Hi3HO2zHTx7bV11` ("VILAX WEB 2026"): page "Dissenys per maquetar · Sistema" (designs); component library on "Components · Basics" (icons, Logo, Button, NavLink), "· Small parts" (LanguageSwitcher, Pill, PaginationItem, tiles, FormField, Checkbox), "· Combined parts", "· Sections" (Header 1268:15098/15099, Footer 1428:1929 desktop / 1428:2348 mobile — old versions, to be rebuilt from parts) |
+| Figma | file `g5P0oB7Hi3HO2zHTx7bV11` ("VILAX WEB 2026"): page "Dissenys per maquetar · Sistema" (designs); component library on "Components · Basics" (no library component inside: icons, Logo, Button, NavLink), "· Small parts" (one element using Basics: Pill, PaginationItem, tiles, AuthorByline, FaqItem, FormField, Checkbox, mega-menu/drawer items), "· Combined parts" (groups of parts: LanguageSwitcher, PostCard, TableOfContents, ContactForm), "· Sections" (full-width blocks built from parts: Header set 1268:15100 — Surface × Display Desktop/Mobile — with Header/MegaMenu, Header/Dropdown, Header/Drawer; Footer 1428:2349; CtaBanner; FaqSection; ClientLogos). Building blocks (`Name/Item`) stay next to their parent |
 | Repo | github.com/acalvet97/vilax-astro (private). `main` = up to date (fast-forwarded from `setup/foundation` on 2026-11-09) |
 | Production header code | `wordpress/reference/production-header/` (reference only) |
 
@@ -197,12 +197,18 @@ npx astro build                      # build against WordPress (.env) — fails 
 Done (pushed to `setup/foundation`): foundation, header, footer, blog archive + article, CTA band, sticky TOC,
 `components/site/` (AiLinks with a `prompt` prop — `getAiLinks(locale, prompt)` + `footerAiPrompt`;
 SocialLinks with Remix glyphs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
-Figma component library steps 1–2 done (Basics, Small parts) and code aligned with them
-(`chore/align-code-with-figma`).
+Figma component library steps 1–4 done (Basics, Small parts, Combined parts, Sections; Header and Footer
+rebuilt from library parts, so the design instances use them). Code aligned with steps 1–2 (PR #6).
 
 Pending in WordPress (Albert): real categories on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
 
 Next steps:
+0. Align code with Figma library steps 3–4 (decided, not coded): FAQ toggle turns accent on hover/focus;
+   PostCard meta = date · CATEGORY (no reading time); dark dividers `border-border-inverse`; mega-menu tab
+   marker also on hover/focus, tab list `gap-xl`; services/drawer `mb-[2.5rem]` → `mb-2xl`; drawer "Ver …"
+   link `text-text` on light (accent only on dark); drawer CTA → `<Button>`. Open: header height (Figma 80px
+   vs code 90px desktop), gutter/mobile modes, logo width (Figma 139px vs 135px), header surface on service
+   pages (designs use Light).
 1. Blog: author pages (wait for Figma) or temporary redirects of `/author/…`; RSS feed (`/feed/`,
    `/en/feed/`); full build against WP; visual review (mobile is not designed).
 2. Astro-owned pages: Home, services (6 categories + sub-services), about, contact, legal.
@@ -215,5 +221,4 @@ Next steps:
    feeds if not kept.
 5. Before launch: link checker `failOnBrokenLinks: true`; decide the per-service CPTs (`agencia-seo`, …).
 
-Open minor issues: drawer "Ver …" link is yellow on white in light mode (production behavior; left for later);
-`/en/web-developement/` typo kept from production URLs.
+Open minor issues: `/en/web-developement/` typo kept from production URLs.
