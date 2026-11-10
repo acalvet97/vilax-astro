@@ -1,11 +1,12 @@
 ---
 /**
  * Post card (Figma "Article_Heading" in the archive 2034:3424 and in
- * "Insights relacionados" 2034:792). The whole card is clickable through the
- * title link.
+ * "Insights relacionados" 2034:792; library "PostCard"). Meta: date · CATEGORY
+ * (reading time only in the article header). The whole card is clickable
+ * through the title link.
  */
 import type { Locale } from '../../i18n/config';
-import { formatDate, useTranslations } from '../../i18n/ui';
+import { formatDate } from '../../i18n/ui';
 import type { PostCard } from '../../lib/blog';
 import AuthorByline from './AuthorByline.astro';
 
@@ -18,7 +19,6 @@ type Props = {
 };
 
 const { card, locale, variant = 'archive', headingLevel: Heading = 'h2' } = Astro.props;
-const t = useTranslations(locale);
 const archive = variant === 'archive';
 ---
 
@@ -31,8 +31,6 @@ const archive = variant === 'archive';
   <div class:list={['flex flex-col', archive ? 'gap-xl' : 'gap-lg']}>
     <p class:list={['t-body-sm', archive ? 'text-text-subtle' : 'text-text-muted']}>
       <time datetime={card.date.toISOString()}>{formatDate(card.date, locale)}</time>
-      <span aria-hidden="true">&nbsp;·&nbsp;</span>
-      {card.readingMinutes} {t('blog.minutesRead')}
       {
         card.category && (
           <>
