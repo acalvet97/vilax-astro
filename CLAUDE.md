@@ -132,7 +132,7 @@ docs/  wordpress-menus.md (menus spec + mega images), wordpress-acf.md (ACF grou
 - **Text styles**: always the project `t-*` utilities, no fluid type (production uses clamp(); Albert will
   align Figma later).
 - **Layout**: `wrapper` = 1600px max content, gutter 1/2/4rem (mobile / ≥768px / ≥1025px); `lg` = 1025px;
-  `--header-height` 80/85/90px (used by the header, drawer, sticky TOC and heading `scroll-margin-top`).
+  `--header-height` 5rem (80px, as Figma) at every width (used by the header, drawer, sticky TOC and heading `scroll-margin-top`).
 - **Header** replicates **production** (not Figma): sticky; logo 108/124/135px; segmented language switcher
   `ES · CA · EN` (same height as the medium Contact button); dark by default (text `text-inverse`, as the
   Figma Header), **light on blog pages** (`headerSurface="light"`; colors in `header-theme.ts`). Mega menu: category tabs (hover/click/arrow keys),
@@ -198,17 +198,16 @@ Done (pushed to `setup/foundation`): foundation, header, footer, blog archive + 
 `components/site/` (AiLinks with a `prompt` prop — `getAiLinks(locale, prompt)` + `footerAiPrompt`;
 SocialLinks with Remix glyphs in accent tiles; ChatGPT uses `ri:openai-fill`), this CLAUDE.md.
 Figma component library steps 1–4 done (Basics, Small parts, Combined parts, Sections; Header and Footer
-rebuilt from library parts, so the design instances use them). Code aligned with steps 1–2 (PR #6).
+rebuilt from library parts, so the design instances use them). Code aligned with steps 1–2 (PR #6) and
+3–4 (2026-11-10: FAQ toggle accent on hover/focus, PostCard meta date · CATEGORY, dark dividers
+`border-border-inverse`, mega-menu tab marker on hover/focus, drawer CTA = `<Button>`).
 
 Pending in WordPress (Albert): real categories on the test posts, TL;DR/FAQs/author on the EN test post, Yoast title separator `|`, fill CTA fields.
 
 Next steps:
-0. Align code with Figma library steps 3–4 (decided, not coded): FAQ toggle turns accent on hover/focus;
-   PostCard meta = date · CATEGORY (no reading time); dark dividers `border-border-inverse`; mega-menu tab
-   marker also on hover/focus, tab list `gap-xl`; services/drawer `mb-[2.5rem]` → `mb-2xl`; drawer "Ver …"
-   link `text-text` on light (accent only on dark); drawer CTA → `<Button>`. Open: header height (Figma 80px
-   vs code 90px desktop), gutter/mobile modes, logo width (Figma 139px vs 135px), header surface on service
-   pages (designs use Light).
+0. Open Figma ↔ code questions: mobile gutter (Figma 20px vs code 16px; tablet stays 2rem in code,
+   Figma has no tablet mode), logo width (Figma 139px vs 135px), header surface on
+   service pages (designs use Light).
 1. Blog: author pages (wait for Figma) or temporary redirects of `/author/…`; RSS feed (`/feed/`,
    `/en/feed/`); full build against WP; visual review (mobile is not designed).
 2. Astro-owned pages: Home, services (6 categories + sub-services), about, contact, legal.

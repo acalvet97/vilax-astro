@@ -4,7 +4,8 @@
  * (max 400px) with level navigation — main menu → Servicios → category →
  * services — a "Volver" button, the language switcher and a full-width CTA.
  * Every menu item with children opens a new level; items with a URL also get
- * a "Ver <item>" link (in accent color) at the end of their level.
+ * a "Ver <item>" link at the end of their level (accent on the dark surface,
+ * text color on light). Library "Header/Drawer".
  * Behavior (open/close, levels, scroll lock) lives in src/scripts/header.ts.
  */
 import { Icon } from 'astro-icon/components';
@@ -13,6 +14,7 @@ import { getRoutePath, type Alternate } from '../../i18n/routes';
 import { useTranslations } from '../../i18n/ui';
 import type { MenuItem } from '../../lib/navigation';
 import MenuLink from '../navigation/MenuLink.astro';
+import Button from '../ui/Button.astro';
 import type { HeaderSurface, HeaderTheme } from './header-theme';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Logo from './Logo.astro';
@@ -77,7 +79,7 @@ const linkClass = [
     </button>
   </div>
 
-  <div class="mt-xl mb-[2.5rem] flex min-h-[3.5rem] items-center justify-between gap-sm">
+  <div class="mt-xl mb-2xl flex min-h-[3.5rem] items-center justify-between gap-sm">
     <button type="button" data-drawer-back hidden class="t-label inline-flex items-center gap-3xs uppercase">
       <Icon name="ri:arrow-left-s-line" class="size-md" aria-hidden="true" />
       {t('nav.back')}
@@ -103,7 +105,11 @@ const linkClass = [
             ),
           )}
           {panel.parent?.href && (
-            <MenuLink item={panel.parent} currentPath={currentPath} class:list={[...linkClass, 'text-accent']}>
+            <MenuLink
+              item={panel.parent}
+              currentPath={currentPath}
+              class:list={[...linkClass, surface === 'dark' && 'text-accent']}
+            >
               <span>
                 {t('nav.see')} {panel.parent.label}
               </span>
@@ -116,11 +122,8 @@ const linkClass = [
   </div>
 
   <div class="flex flex-col pt-sm">
-    <a
-      href={getRoutePath('contact', locale)}
-      class="t-label flex items-center justify-center border border-accent bg-accent px-xl py-sm text-center uppercase text-text-on-accent"
-    >
+    <Button href={getRoutePath('contact', locale)} surface={surface} class="w-full text-center">
       {t('nav.cta')}
-    </a>
+    </Button>
   </div>
 </div>

@@ -21,7 +21,6 @@ export type PostCard = {
   title: string;
   path: string;
   date: Date;
-  readingMinutes: number;
   category?: { name: string; path: string };
   author?: Byline;
 };
@@ -60,7 +59,6 @@ export async function toPostCard(post: Post): Promise<PostCard> {
     title: post.data.title,
     path: post.data.path,
     date: post.data.date,
-    readingMinutes: post.data.readingMinutes,
     category: category && { name: category.data.name, path: category.data.path },
     author,
   };

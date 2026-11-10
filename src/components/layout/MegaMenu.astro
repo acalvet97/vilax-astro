@@ -22,7 +22,7 @@ const t = useTranslations(locale);
 
 <div id={id} hidden class:list={['absolute inset-x-0 top-full border-y', theme.surface, theme.border]}>
   <div class="wrapper grid grid-cols-[25%_1fr] gap-xl py-3xl">
-    <div role="tablist" aria-orientation="vertical" class="flex flex-col items-start gap-2xl pt-2xs pl-sm">
+    <div role="tablist" aria-orientation="vertical" class="flex flex-col items-start gap-xl pt-2xs pl-sm">
       {
         groups.map((group, i) => (
           <button
@@ -36,8 +36,9 @@ const t = useTranslations(locale);
               't-heading-md relative text-left text-text-subtle transition-colors duration-200',
               theme.hoverFg,
               theme.selectedFg,
-              // Yellow triangle marker on the selected tab
-              'aria-selected:before:absolute aria-selected:before:top-1/2 aria-selected:before:-left-sm aria-selected:before:h-[0.6rem] aria-selected:before:w-[0.4rem] aria-selected:before:-translate-y-1/2 aria-selected:before:bg-accent aria-selected:before:[clip-path:polygon(0_0,100%_50%,0_100%)]',
+              // Yellow triangle marker on the selected tab and on hover/focus
+              'before:absolute before:top-1/2 before:-left-sm before:h-[0.6rem] before:w-[0.4rem] before:-translate-y-1/2 before:bg-accent before:[clip-path:polygon(0_0,100%_50%,0_100%)]',
+              'before:hidden aria-selected:before:block hover:before:block',
             ]}
           >
             {group.label}
@@ -56,7 +57,7 @@ const t = useTranslations(locale);
           class="grid grid-cols-[1fr_minmax(0,24rem)] items-start gap-3xl"
         >
           <div>
-            <ul class="mb-[2.5rem] flex flex-col gap-lg">
+            <ul class="mb-2xl flex flex-col gap-lg">
               {group.children.map((link) => (
                 <li>
                   <MenuLink
